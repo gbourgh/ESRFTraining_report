@@ -1,0 +1,119 @@
+\documentclass{beamer}
+\usetheme{Pittsburgh}
+\usepackage{textpos}
+\usepackage{lipsum}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%		Insert your variables here		%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\thetitle {\huge{Intitul\'e du stage}}		%Full title, displayed on first slide
+\def\theshorttitle {Intitul\'e} 			%short title, displayed on all slides footers
+\def\theauthor {Guillaume Bonamis}				%Full authors, displayed on first slide
+\def\theshortauthor {Bonamis}					%Short authors, displayed on all slides footers
+\def\thedate {Vendredi 4 Septembre}
+\def\theinstitute {European Synchrotron Radiation Facility, Universit\'e Lille 1}%Full name of institute, displayed on first slide
+\def\theshortinstitute {ESRF, Lille 1}			%Short name of institute, displayed on all slides footers
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% ESRF beamer template from Pittsburgh theme %%%%%%%%%%%%%%%%%%%%
+
+% Remove the navigation bar (but leave footer enabled)
+\beamertemplatenavigationsymbolsempty%or \setbeamertemplate{navigation symbols}{}
+%Template color
+\definecolor{skyblue6}{RGB}{0,0,128}
+\setbeamercolor{footline}{fg=skyblue6}
+%\setbeamerfont{footline}{series=\bfseries}%bolderize footline text
+%\setbeamercolor{title}{fg=whatever}
+%\setbeamercolor{frametitle}{fg=whatever}
+%\setbeamercolor{structure}{fg=whatever}
+
+\title[\theshorttitle]{\thetitle}
+\author[\theshortauthor]{
+\includegraphics[scale=0.2]{ESRF_logo.png}
+\\[20pt]
+\theauthor
+}
+\institute[\theshortinstitute]{\theinstitute}
+\date{\thedate}
+\begin{document}
+\begin{frame}
+\maketitle
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%		Hearder, Footer	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\setbeamertemplate{frametitle}[default][left]
+\setbeamercolor{theheader}{fg=white,bg=skyblue6}
+\setbeamertemplate{frametitle}{%
+%\color{white}%\bfseries
+\begin{beamercolorbox}[ht=2.5ex,dp=1ex,center]{theheader}
+\usebeamerfont{title in head/foot}
+%---Conditionally shows the section, subsection
+\setbox0=\hbox{\secname\unskip}\ifdim\wd0=0pt\else%
+\thesection{}.%
+\fi
+\setbox0=\hbox{\subsecname\unskip}\ifdim\wd0=0pt\else%
+\thesubsection
+\fi
+%---
+~\insertframetitle
+\end{beamercolorbox}%
+\par\vskip-6pt
+}
+%%%%
+\addtobeamertemplate{footline}{}{%
+\begin{textblock*}{600mm}(.68\textwidth,-1.1cm)
+\includegraphics[scale=0.3]{ESRF_logo_bottom.png}
+\end{textblock*}}
+\setbeamerfont{footline}{size=\fontsize{5}{7}\selectfont}
+\addtobeamertemplate{footline}{}{%
+\begin{textblock*}{600mm}(.02\textwidth,-0.4cm)
+\insertframenumber/\inserttotalframenumber
+\hspace{3em}
+\insertshorttitle
+\hspace{3em}
+\insertdate
+\hspace{4em}
+\insertshortauthor
+\end{textblock*}}
+%%%%%%%%%%%%%%%%%%%%	Further customization	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Show plan at the beginning of each new section
+\AtBeginSection[]
+{
+ \begin{frame}<beamer>[noframenumbering]
+ \frametitle{Plan}
+ \tableofcontents[currentsection]
+ \end{frame}
+}
+\AtBeginSubsection[]{}
+\setcounter{tocdepth}{2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%	Here we go	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[noframenumbering]{Outline}
+\tableofcontents
+\end{frame}  
+
+
+\section{SAXS et mod\'elisation structurale}
+
+\begin{frame}{Exp\'eriences de SAXS sur BM 29}
+\lipsum[1]
+\end{frame}
+
+\begin{frame}{Mod\'elisation structurale}
+\lipsum[1]
+\end{frame}
+
+\section{Impl\'ementation}%titre a voir !!!
+
+\begin{frame}{Une autre diapo}
+\lipsum[1]
+\end{frame}
+
+
+\section{Exemple}%titre a voir selon l'exemple presente !!!
+
+\begin{frame}{Et encore une autre}
+\lipsum[1]
+\end{frame}
+
+\end{document}

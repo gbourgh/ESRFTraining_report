@@ -1,0 +1,625 @@
+\documentclass[a4paper, 11pt]{report}
+
+\usepackage{shorttoc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\begin{document}
+
+\begin{titlepage}
+    %--------------------------
+    % Page de garde du rapport
+    %--------------------------
+    \parindent=0pt
+    \hrulefill
+    \begin{center}\bfseries\Huge            %Intitule du stage
+        Title of my report                  %voir pour le titre !!!
+    \end{center}
+
+    \hrulefill
+    \vspace*{1cm}
+    \begin{center}\bfseries\Large           %auteur
+        Guillaume Bonamis
+    \end{center}
+
+    \begin{center}\bfseries\Large           %superviseur
+        Under the supervision of J\'er\^ome Kieffer
+    \end{center}
+
+    \vspace*{\stretch{2}}
+    \begin{flushright}
+        August 27, 2015
+    \end{flushright}   
+    
+    %rajouter un mot sur le tuteur Lille1
+\end{titlepage}
+
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{Table of contents}
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+    %-------------------------------------
+    % Page pour les divers remerciements
+    %-------------------------------------
+
+%mettre une sorte d'abstract avant le premier chapitre ???
+
+
+\chapter{Introduction}
+
+
+\section{The European Synchrotron Radiation Facility}
+
+The European Synchrotron Radiation Facility (ESRF) is a circular 
+accelerator of electrons used to provide X-ray light.\\
+
+The operation of a synchrotron depends on the following physical 
+phenomenon: when electrons are accelerated, they emit radiation. 
+To create this accelerated movement, electrons are speeded up until it 
+reach speeds close from the light one and then inserted in a circular 
+storage ring. 
+There, electrons cross linear blocks parted by bending magnets which 
+directed them, block per block. 
+This process produce the wanted bright X-ray light.\\
+
+This radiation is a very efficient tool for the structure of matter 
+study at an atomic level. 
+So to be used for experiments, each beam of synchrotron radiation is 
+guided in several optical instruments wich compose what is it called a 
+beamline. 
+There, X-ray beam interacts with matter samples being studied. 
+This interaction has to be measured and then treated, mostly by 
+informatics means, to provide data to the users of the beamline.\\
+
+The ESRF is the most powerful source of synchrotron radiation in 
+Europe and provides each year beamtime for thousands of users.
+
+%insert there an image to present storage ring and emission of light ???
+
+\section{BM29 beamline}%changer le titre ???
+%est ce que je peux citer la publi qui n'a pas encore ete publiee ???
+%citer une publi plus ancienne a propos de BM29 (Pernot et al.) ???
+
+BM29 is the BioSAXS dedicated beamline of the ESRF. 
+It is a tools using Small Angles X-ray Scattering techniques (SAXS) to 
+study the structure of proteins or macromolecular complexes in 
+solution. 
+The beamline data acquisition running is based on a pipeline of 
+individual tasks, highly automated, from the inputs to the final 
+results. 
+Here will be fastly described this series of process, focussing on 
+what matter for our subject.
+For more information about all the data treatment on BM29, you can 
+refer to .\\ %citer une publi !!!
+
+The series of tasks is controlled by EDNA, which is a plugin-based 
+framework dedicated to pipelines data-analysis building \cite{edna}. 
+It begin with the acquisition of the 2-d scattering image of the 
+studied sample by a detector, a Pilatus 1M for BM29. 
+Then, the global data-analysis process can be divided in four steps: 
+\begin{itemize}
+ \item azimuthal integration of the image
+ \item background correction
+ \item basic analysis of the curve
+ \item ab-initio modelling
+\end{itemize}
+
+The image obtained reprensents the X-ray scattering by the sample, it 
+has a symmetry along $\theta$ axis in the circular coordinates with the 
+origin at the center of the beam. 
+The first step consists in integrating the 2-d image along the 
+symmetry axis. 
+This operation is performed using FabIO \cite{fabio} for the image 
+reading and PyFAI \cite{pyFAI} for the azimuthal integration and the 
+result is a curve representing the scattered intensity function of the 
+radius.\\%faut-il plutot citer Kieffer & Ashiotis pour PyFAI ???
+
+This curve has to be background-corrected before to be used. 
+For it, scattering curve of the buffer is computed before and after 
+the sample one, wich allows some EDNA plugins to subtract to the 
+sample curve all that do not results of the scattering du to the 
+sample. 
+The background-corrected is then analysed with several tools from the 
+\textsc{atsas} package \cite{atsas}. 
+%Dammif is it using one of these curves ???
+It creates automatically several curves that we will not describe here 
+because they do not contribute to the pipeline we are interested in.\\
+
+The fourth step of the data-analysis is the ab-initio modelling, whose 
+the aim is to retrieve a 3-d low-resolution structural model of the 
+input molecule. 
+For it, BM29 was using other tools from the \textsc{atsas} package 
+like presented in the following section.
+
+\section{Ab-initio modelling, position of the subject}
+\label{modelling}                           %flag pour citer cette section
+
+The core of the training subject is in this part of the data 
+treatment. 
+So here will be detailed both the global process and the accurate 
+problem met.\\
+
+The first step of the modelling consists in reconstructing $N$ 3-d 
+dummy-atoms models from the background-corrected curve with 
+\textit{dammif} \cite{dammif}. %really that curve ???
+These dummy-atoms models (DAM) are then selected according to two 
+parameters: the $R-factor$ representing the goodness of the fit and 
+the $\chi^2$. %le chi^2 de quoi ???
+The thresholds are respectively the mean plus one or two standard 
+deviation, and out of range models are discarded.\\
+Remaining DAM are then superimposed two by two and a metric called 
+Normalized Spatial Discrepancy (NSD) is computed to measure the 
+difference between two models. 
+The program used here is \textit{supcomb} \cite{supcomb}. 
+It allows to segregate similar models and others. 
+So, once again, models are discarded, this time using the NSD values. 
+For each DAM, the mean of its NSD with others is computed. 
+And if this value exceeds the mean plus two time the standard 
+deviation, it is discarded. 
+The DAM with the lower value is said to be the reference model.\\
+So here, at the moment of the process, $N - n$ models remain and one 
+of them is the reference. 
+These $N - n$ models are merged with two programs, \textit{damaver} 
+\cite{damaver} and \textit{damfilt}, to get the average solution (an 
+average DAM). 
+The result from \textit{damaver} is then used by \textit{damstart} and 
+\textit{dammin} \cite{dammin} to compute a refined model which fit the 
+initial curve and so is assumed to be the wanted result: the 
+structural model of the molecule from the studied sample.\\
+
+The topic of the traineeship was to work on the part "superimposition 
+and selection of the models" of the modelling process. 
+In fact, all the modelling process was pointed out as the most 
+problematic according to the beamline scientists for several reason.\\
+The first one is that the BM29 pipeline is based on Python whereas the 
+\textsc{atsas} package is wrote in Fortran, so for a better 
+integration in the pipeline, a Python code could be advantageous. 
+%atsas en Fortran ???
+The fact that the programs from this package are closed source add 
+difficulties for their integration in the pipeline. 
+An other reason come from the execution times of these programs which 
+make the ab-initio modelling the bottleneck of the BM29 pipeline. 
+Furthermore, it could happened that the process was aborted because of 
+the last program launched, \textit{dammin}, which cannot finish its 
+work after half an hour.\\
+
+In accordance with these observations, it was decided to create a 
+homemade package to overpass these data-analysis problems. 
+These package has been called FreeSAS, is open source and free (under 
+the MIT License). 
+It will be write in Python and its aim will be to provide tools for 
+the BioSAXS data analysis, with an execution time optimised and 
+providing reliable results. 
+The training was dedicated to this Python package, and especially the 
+re-implementation of the superimposition of the DAM (so previously 
+done by \textit{supcomb}) and the selection of those to keep along the 
+process.
+
+
+\chapter{FreeSAS implementation}%titre temporaire ???
+
+
+As presented previously, FreeSAS is a Python package write to be a 
+tool for BioSAXS data-analysis. 
+It is compound of several modules, each adapted for the execution of a 
+special task. 
+Here is presented the implementation of FreeSAS, but gathering some 
+modules in several workgroups to well explain both:
+\begin{itemize}
+ \item the physical theory behind this problem of DAM superimposition 
+and selection
+ \item the different Python tools and algorithms used to reach our aim
+\end{itemize}
+
+The last section will describe the way all these tasks are exploited 
+to create a "global process" computing the wanted result. 
+
+\section{Reading inputs data}
+
+The code wrote has to be able to work in the BM29 pipeline presented 
+in the previous chapter. 
+As a piece of a biggest program, he has inputs comming from the 
+program used before it and has to provide outputs which can be used by 
+the program launched after it. 
+Here we will focus on the reading of the inputs data and the ones we  
+are interested in and why.\\
+
+The inputs of the "box" we have to build are the outputs DAM of the 
+\textit{dammif} program. 
+These data we dispose are under a special format called PDB for 
+Protein Data Bank. %citer quelquechose pour format PDB ???
+The PDB format is used to provide a standard representation of 
+macromolecular structure data, and especially those from X-ray 
+scattering experiments. 
+For the processing we will have to apply to these dummy-atoms model, 
+we need to retrieve two things from the pdb file of the DAM.\\
+
+The first one is the $R-factor$ of the model. 
+This number represent the quality of the model, calculated using the 
+difference between the SAXS curve which could be retrieve if the real 
+protein in the sample was this model and the actual curve obtained by 
+SAXS experiment. 
+This image of the goodness of the fit of this model is not used 
+straightway in the data treatment but only in the selection part of 
+the algorithm; so we will see how we use it in the fourth section.\\
+
+The second data to retrieve are the dummy-atoms coordinates. 
+As it has been mentioned, we want to retrieve the low-resolution 
+structure of the molecule from the studied sample and for it we create 
+a model with dummy-atoms. 
+They are not actual atoms, they mean that, at this position, there is 
+some material (the molecule), and where there is no dummy-atoms, it is 
+solvent. 
+Typically, the DAM we worked with were compound by 500 dummy-atoms (
+order of magnitude).\\
+The parser we wrote was dedicated to these task: to read the pdb file 
+to select the data we needed, and then to keep in memory in one hand 
+the $R-factor$ of the DAM and in an other hand the coordinates (x, y, 
+z) of each dummy-atoms of the model. 
+These coordinates are stored as a 2-d numpy array from the 
+\textit{NumPy} package for scientific Python \cite{numpy}; they are 
+necessary for geometric handling we will have to do along our process.
+
+\section{NSD calculation}
+
+Now we have to come back to what we saw at the end of the previous 
+chapter and at the beginning of this one. 
+We saw that our code has $N$ DAM as inputs and $N - n$ as outputs, and 
+that the choice of the models to discard depend of the similarity of 
+each model with the other. 
+So we have to detail the way this similarity is measured and how it 
+has been implemented in the FreeSAS package.\\
+
+The likeness of two 3-d models can be, at first glance, very 
+subjective. 
+To be able to compute it, we use a metric called Normalized Spatial 
+Discrepancy (NSD), introduced by Kozin and Svergun in their paper 
+\textit{Automated matching of high- and low-resolution structural 
+models} \cite{supcomb}. 
+This tool allows to quantify the dissimilarity between two sets of 
+point, in our case in a three-dimensions space. 
+It has been built has an analogue to the standard Euclidian distance.\\
+
+The NSD is introduced with the following formula:\\
+\[
+\rho(S_{1},S_{2})={(1/2)[\frac{1}{N_{1}d_{2}^2} \cdot \sum\limits_{i=1}^{N_{1}} \rho^2(s_{1i}, S_{2}) + \frac{1}{N_{2}d_{1}^2} \cdot \sum\limits_{i=1}^{N_{2}} \rho^2(s_{2i}, S_{1})]}^{1/2}
+\]
+\\
+There, $S_{1}$ is the model \textit{1} set of points ($N_{1}$ points). 
+For a point $s_{1i}$ in $S_{1}$, the Euclidian distance with all the 
+points of $S_{2}$ is computed, and the minimal one is denoted as 
+$\rho(s_{1i}, S_{2})$. 
+The last parameters present in the formula is the fineness $d_{i}$. 
+It correspond to the average Euclidian distance between a point of 
+$S_{i}$ and its first neighbouring points.\\
+The NSD respect several needs we have:
+\begin{itemize}
+ \item it is symmetric, $\rho(S_{1},S_{2}) = \rho(S_{2},S_{1})$
+ \item it is stable, $\rho(S_{1},S_{2})$ function has a stable minimum
+ \item $\rho(S_{1},S_{2}) = 0$ only if $S_{1} = S_{2}$
+\end{itemize}
+
+The calculation of the NSD is the core of our process because it is 
+our indicator of the similarity between two DAM. 
+This importance has also an impact on the execution time of the 
+process: it is the called method which take the most of time. 
+As this parameter was a key of the project, the NSD computation had to 
+be optimized in term of speed.\\
+The first thing done for it was to re-wrote the calculation of the NSD 
+in Cython \cite{cython}. 
+This programming language translates Python code to an equivalent C 
+code which allows major gain in term of execution time.\\
+To have again speed improvements, a second step has been performed: 
+this piece of code has also been parallelized with OpenMP. 
+Indeed the parallelization of some calculations allows to take 
+advantage of the presence of a multi-core processor on the computer, 
+which is the case on the computers used on the beamline BM29.
+
+\section{Coarse superimposition of models}
+
+With the data extracted of pdb files and the NSD tool, we should be 
+able to calculate the dissimilarity between two models. 
+The fact is that we need other tools for it because of the arrangement 
+of the dammif models. 
+Actually the DAM we dispose are randomly positioned, so at this moment 
+of the data-analysis, the NSD between two models do not show their 
+difference but only the spatial distance that separates them. 
+That is why we have to first superimpose the models so that the NSD 
+only point out the dissimilarity. 
+Here we will define the superimposition algorithm followed in our 
+program with parameters needed for it.\\
+
+To superimpose two DAM with their set of dummy-atoms $S_{1}$ and 
+$S_{2}$, we have used the algorithm defined in Kozin and Svergun 
+publication previously quoted \cite{supcomb}. 
+It describe a three-steps process to reach our aim.\\
+
+The first stage consists in superimposing both models center of mass 
+(COM). 
+In the dummy-atoms modelization, all the dummy-atoms has the same mass 
+so the COM coordinates of the model $k$ are computed as follow:
+\[
+x_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} x_{ik};\ \ \ 
+y_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} y_{ik};\ \ \ 
+z_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} z_{ik}
+\]\\
+From it, the translation to send the model $S_{k}$ to the coordinates 
+origin is calculated as $T_{k}^0 = (-x_{k}^0,\ -y_{k}^0,\ -z_{k}^0)$. 
+Thus, to send $S_{2}$ on $S_{1}$, we apply it two transformations: 
+$T_{2}^0$ first and $(T_{1}^0)^{-1}$, where $(T_{1}^0)^{-1}$ is the 
+reverse of the translation $T_{1}^0$.\\
+
+The following step to superimpose correctly $S_{2}$ on $S_{1}$ is the 
+selection of an enantiomorph. 
+In fact, two enantiomorphs of a macromolecule generate the same SAXS 
+curve, so that this method do not allows to segregate them. 
+Thus, we do not make a difference for our data-analysis between two 
+enantiomorphs; and it needs to be implemented. 
+For it, eight transformations are applied on $S_{2}$, the eight 
+possible transformation matrices as follow:
+\[
+\begin{pmatrix}
+ \pm 1 & 0 & 0 & 0 \\
+ 0 & \pm 1 & 0 & 0 \\
+ 0 & 0 & \pm 1 & 0 \\
+ 0 & 0 & 0 & 1
+\end{pmatrix}
+\]\\
+And after each transformation, the NSD between $S_{1}$ and $S_{2}$ is 
+computed. 
+The one minimizing the NSD is kept as the good symmetry for the 
+following steps.\\
+
+Next come the alignment stage. 
+At the moment of the superimposition, both centers of mass are in the 
+same position and both models are in the same enantiomorphic 
+structure. 
+To refine their superimposition, a rotation is performed on the second 
+model. 
+This rotation aims to align the principles axis of inertia of both 
+DAM. 
+To compute them, we first need to know the inertia matrix of the 
+models $S_{k}$; and it is given by:
+\[
+I_{k}=
+\begin{pmatrix}
+ I_{11} & I_{12} & I_{13} \\
+ I_{21} & I_{22} & I_{23} \\
+ I_{31} & I_{32} & I_{33} \\
+\end{pmatrix}
+\]\\
+and knowing that each point of the set $S_{k}$ is defined by
+$
+s_{kq}=
+\begin{pmatrix}
+ x_{kq}^1 \\
+ x_{kq}^2 \\
+ x_{kq}^3 \\
+\end{pmatrix}
+$\\
+we have
+\[
+I_{ij} = \frac{1}{N_{k}} \cdot \sum\limits_{q=1}^{N_{k}} 
+[\delta_{ij} \cdot \sum\limits_{l=1}^3 
+ (x_{kq}^l - {x_{kq}^l}^0)^2 -  (x_{kq}^i - {x_{kq}^i}^0) 
+ \cdot (x_{kq}^j - {x_{kq}^j}^0)]
+\]\\
+It appears that $I_{k}$ tensor is symmetric so we know that it can be 
+diagonalized; we can compute its three eigenvalues 
+$\lambda_{k1} \geq \lambda_{k2} \geq \lambda_{k3}$ and the three 
+eigenvectors corresponding $v_{k1},\ v_{k2},\ v_{k3}$. 
+We can create a rotation matrix compound by the columns from 
+eigenvectors of $I_{k}$, sorted with rising order of associated 
+eigenvalues. 
+If this matrix is wrote $M_{k}$, is transposed $[M_{k}]^T$ is the 
+rotation matrix which align $S_{k}$ axis of inertia with the 
+coordinates axis \cite{supcomb}.\\
+With these roation matrix, we are able to align two models following 
+common axis. 
+In our work we chose to always align the second DAM on the first one 
+initial position. 
+We saw before that first $S_{2}$ is translated to put its center of 
+mass on the one of $S_{1}$ using the translation 
+$(T_{1}^0)^{-1} \times T_{2}^0$. 
+In fact, a rotation step has to be inserted between these two 
+translations. 
+Finally, the global transformation to apply to $S_{2}$ is 
+\[(T_{1}^0)^{-1} \times M_{1} \times M_{2}^T \times T_{2}^0\]
+
+At the end of this process, we have two DAM whose centers of mass and 
+principles axis of inertia are superimposed; we will say canonically 
+superimposed. 
+But even if this canonical superimposition produce a good fit of the 
+two models, it remains a coarse superimposition that we need to 
+optimize for a better understanding of the dissimilarity between two 
+dummy-atoms models.
+
+\section{Refined superimposition and selection}
+
+Once the reading, superimposing and NSD tools implemented, it remains 
+to establish the global process of DAM selection, the aim of our code. 
+In this section we will present how the coarse alignment has been 
+refined to then select the models we want to keep for the continuation 
+of the BM29 pipeline.\\
+
+We saw in the previous section how two models are canonically 
+superimposed in the code of FreeSAS, and that this coarse alignment is 
+not good enough for an efficient comparison between two models. 
+Nevertheless, the core of the superimposition process will remains the 
+same, we will add on it the refinment algorithm.\\
+We have to optimize the transformation applied to $S_{2}$ to align it 
+with $S_{1}$, and the criterion of improvement will be the NSD, which 
+has to be as low as possible. 
+For it, we use the simplex optimizer provided by the \textit{SciPy} 
+library \cite{scipy}. 
+But to use it, accurate numerical parameters are needed. 
+What we did is to extract from the global transformation matrix 
+presented before six transformation parameters: 
+$(x_{0}, y_{0}, z_{0})$, 
+corresponding to the total translation applied to $S_{2}$, and 
+$(\alpha, \beta, \gamma)$, 
+which are the Euler angles extracted from the total rotation. 
+The optimizer receives this six parameters and call a function which 
+returns the NSD between $S_{1}$ and $S_{2}$ after the input 
+transformation has been applied to $S_{2}$. 
+This call is repeat again and again, refining each time the six 
+parameters values to minimize the NSD returned.\\
+When these iterations reach a landing, the optimizer is stopped and 
+returns the six refined parameters and the minimized NSD. 
+Here, the superimposition of the two models is optimized, the final 
+NSD value is assumed to reflect the actual dissimilarity between them.\\
+
+The algorithm to superimpose two DAM has been fully described, it has 
+to be implemented in order to superimpose the $N$ models outgoing of 
+\textit{dammif}. 
+For it, dammif pdb files are first read with the FreeSAS parser and 
+usefull data are extracted as presented before. 
+Some properties you introduced are then computed from it. 
+At this stage we dispose of $N$ detailled DAM and all we need to 
+superimpose them.\\
+The superimposition is implemented to obtain a NSD table $N*N$ sized. 
+Each model is represented by a row and a column. 
+Each bow in the table will contain the optimized NSD between the "row" 
+model and the "column" model. 
+To resume, we want a $N*N$ table with 
+\[
+table_{ij}=NSD(S_{i},S_{j})
+\]\\ 
+We know that all we will have zeros on the diagonal and the table will 
+be symmetric because of two properties of the NSD:
+\[
+NSD(S_{i},S_{i})=0.00 \Rightarrow table_{ii}=0.00
+\]
+\[
+NSD(S_{i},S_{j}) = NSD(S_{j},S_{i}) \Rightarrow table_{ij}=table_{ji}
+\]\\
+Thus we can compute $\frac{N \cdot (N-1)}{2}$ optimized 
+superimpositions instead of $N*N$.\\
+
+Once the NSD table generated, we dispose of all we need to select the 
+dummy-atoms models.\\
+The first criteria of selection have already been presented in 
+\ref{modelling} section: the $\chi^2$ and the $R-factor$. 
+These two parameters are not dependent of the DAM position, they are 
+computed before any movements. 
+So for a gain of execution time, the test on them are computed before 
+the superimposition process. 
+Thus some models (say $x$) are discarded before to be superimposition, 
+which allow us to skip the optimized alignment calculation to save 
+time: $\frac{(N-x) \cdot (N-x-1)}{2}$ instead of 
+$\frac{N \cdot (N-1)}{2}$.\\
+The following criterion of selection has also been explained in 
+\ref{modelling} section, the average NSD between each models and 
+others. 
+This variable is computed using the NSD table obtained by the process 
+we know and the test is performed for each DAM remaining ($N-x$ at 
+this level). 
+A new series of models is discarded (or neither), that give us the 
+$N-n$ acceptable DAM to follow the modelling process of EDNA. 
+Moreover, the model with the lower average NSD is set as "reference 
+model".\\
+
+At the end of it, data are formatted to present correctly the analysis 
+results. 
+First, what concern DAM is saved using PDB format to be accessible to 
+the next program \textit{damaver}. 
+The models are aligned on the reference one and are saved in this 
+position, as needed by \textit{damaver}. 
+Informations about the selection process are also saved to be 
+available for the BM29 user. 
+A piece of code has been written to create figures with $\chi^2$ and 
+$R-factor$ values and thresholds, the NSD table and the average NSD 
+values and threshold. 
+These figures are computed using the \textit{matplotlib} Python 
+library \cite{matplotlib}.
+
+%petite conclusion de ce chapitre ici ou plus longue intro dans le suivant ???
+
+
+\chapter{Pratical example}%titre temporaire
+
+
+\section{section nb 1}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Praesent hendrerit mollis nisl, vel varius urna iaculis at.
+Sed vel consequat enim.
+Nulla sit amet blandit sapien.
+Praesent sagittis varius dui non sollicitudin.
+Integer ut dignissim ex, non scelerisque erat.
+Etiam in tellus lobortis, condimentum purus ac, volutpat odio.
+Nunc dictum maximus orci id iaculis.
+Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
+per inceptos himenaeos.
+Phasellus consequat, magna ac mattis mollis, diam nisl sagittis erat, 
+quis congue nunc massa at odio.
+Vivamus eleifend sollicitudin lorem, varius posuere massa cursus sit 
+amet.
+
+\section{section nb 2}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Praesent hendrerit mollis nisl, vel varius urna iaculis at.
+Sed vel consequat enim.
+Nulla sit amet blandit sapien.
+Praesent sagittis varius dui non sollicitudin.
+Integer ut dignissim ex, non scelerisque erat.
+Etiam in tellus lobortis, condimentum purus ac, volutpat odio.
+Nunc dictum maximus orci id iaculis.
+Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
+per inceptos himenaeos.
+Phasellus consequat, magna ac mattis mollis, diam nisl sagittis erat, 
+quis congue nunc massa at odio.
+Vivamus eleifend sollicitudin lorem, varius posuere massa cursus sit 
+amet.
+
+\section{section nb 3}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Praesent hendrerit mollis nisl, vel varius urna iaculis at.
+Sed vel consequat enim.
+Nulla sit amet blandit sapien.
+Praesent sagittis varius dui non sollicitudin.
+Integer ut dignissim ex, non scelerisque erat.
+Etiam in tellus lobortis, condimentum purus ac, volutpat odio.
+Nunc dictum maximus orci id iaculis.
+Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
+per inceptos himenaeos.
+Phasellus consequat, magna ac mattis mollis, diam nisl sagittis erat, 
+quis congue nunc massa at odio.
+Vivamus eleifend sollicitudin lorem, varius posuere massa cursus sit 
+amet.
+
+
+\chapter*{Conclusion and outlook}
+\addcontentsline{toc}{chapter}{Conclusion and outlook}
+    %----------------------------------------
+    % Chapitre de conclusion + perspectives
+    %----------------------------------------
+
+
+\bibliographystyle{plain}%ou autre ???
+\bibliography{bibliography}
+\addcontentsline{toc}{chapter}{Bibliography}
+    %-------------------------
+    % Bibliographie du stage
+    %-------------------------
+
+
+\appendix
+    %---------------------
+    % Annexes du rapport
+    %---------------------
+
+%a voir pour le contenu
+
+\chapter{First appendix}
+
+\chapter{Second appendix}
+
+
+\end{document}
+
