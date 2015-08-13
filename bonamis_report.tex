@@ -93,9 +93,8 @@ individual tasks, highly automated, from the inputs to the final
 results. 
 Here will be fastly described this series of process, focussing on 
 what matter for our subject.
-For more information about all the data treatment on BM29, you can 
-refer to \cite{BM29news}, submitted to the Journal of Applied 
-Crystallography.\\
+All data treatments have recently been described in \cite{BM29news} 
+(submitted to \textit{Journal of Applied Crystallography}).\\
 
 The series of tasks is controlled by EDNA, which is a plugin-based 
 framework dedicated to pipelines data-analysis building \cite{edna}. 
@@ -110,48 +109,49 @@ Then, the global data-analysis process can be divided in four steps:
 \end{itemize}
 
 The image obtained reprensents the X-ray scattering by the sample, it 
-has a symmetry along $\theta$ axis in the circular coordinates with the 
-origin at the center of the beam. 
+has a cylindrical symmetry along the transmitted beam. 
 The first step consists in integrating the 2-d image along the 
 symmetry axis. 
 This operation is performed using FabIO \cite{fabio} for the image 
 reading and PyFAI \cite{pyFAI} for the azimuthal integration and the 
 result is a curve representing the scattered intensity function of the 
-radius.\\%faut-il plutot citer Kieffer & Ashiotis pour PyFAI ???
+scattering vector $q = 4 \pi \frac{sin(\theta)}{\lambda}$ (expressed 
+in inverse nanometers).\\
 
-This curve has to be background-corrected before to be used. 
-For it, scattering curve of the buffer is computed before and after 
-the sample one, wich allows some EDNA plugins to subtract to the 
+This curve has to be background-corrected using the scattering of the 
+buffer solution , wich allows some EDNA plugins to subtract to the 
 sample curve all that do not results of the scattering du to the 
 sample. 
-The background-corrected is then analysed with several tools from the 
-\textsc{atsas} package \cite{atsas}. 
+The background-corrected curve is then analysed with several tools 
+from the \textsc{atsas} package \cite{atsas}. 
 %Dammif is it using one of these curves ???
 It creates automatically several curves that we will not describe here 
 because they do not contribute to the pipeline we are interested in.\\
 
-The fourth step of the data-analysis is the ab-initio modelling, whose 
-the aim is to retrieve a 3-d low-resolution structural model of the 
-input molecule. 
-For it, BM29 was using other tools from the \textsc{atsas} package 
-like presented in the following section.
+The fourth step of the data-analysis is the ab-initio modelling, 
+presented in the following section.
 
-\section{Ab-initio modelling, position of the subject}
+\section{Ab-initio modelling}
 \label{modelling}                           %flag pour citer cette section
 
-The core of the training subject is in this part of the data 
-treatment. 
-So here will be detailed both the global process and the accurate 
-problem met.\\
+Ab-initio modelling aims to retrieve a 3-d low-resolution structural 
+model of the input molecule. 
+For it, BM29 use other tools from the \textsc{atsas} package as 
+follow.\\
 
 The first step of the modelling consists in reconstructing $N$ 3-d 
 dummy-atoms models from the background-corrected curve with 
 \textit{dammif} \cite{dammif}. %really that curve ???
 These dummy-atoms models (DAM) are then selected according to two 
-parameters: the $R-factor$ representing the goodness of the fit and 
-the $\chi^2$. %le chi^2 de quoi ???
+parameters computed with the curve: 
+\[
+R = \frac {\sum {||I_{obs}| - |I_{calc}||}}{\sum {|I_{obs}|}}; \ \ \ 
+\chi^{2} = \sum {\frac {(I_{obs} - I_{calc})^{2}}{\sigma^{2}}}
+\]
+These two values allow to evaluate the goodness of the fit. 
 The thresholds are respectively the mean plus one or two standard 
 deviation, and out of range models are discarded.\\
+
 Remaining DAM are then superimposed two by two and a metric called 
 Normalized Spatial Discrepancy (NSD) is computed to measure the 
 difference between two models. 
@@ -162,6 +162,7 @@ For each DAM, the mean of its NSD with others is computed.
 And if this value exceeds the mean plus two time the standard 
 deviation, it is discarded. 
 The DAM with the lower value is said to be the reference model.\\
+
 So here, at the moment of the process, $N - n$ models remain and one 
 of them is the reference. 
 These $N - n$ models are merged with two programs, \textit{damaver} 
@@ -170,7 +171,9 @@ average DAM).
 The result from \textit{damaver} is then used by \textit{damstart} and 
 \textit{dammin} \cite{dammin} to compute a refined model which fit the 
 initial curve and so is assumed to be the wanted result: the 
-structural model of the molecule from the studied sample.\\
+structural model of the molecule from the studied sample.
+
+\section{Traineeship subject}
 
 The topic of the traineeship was to work on the part "superimposition 
 and selection of the models" of the modelling process. 
@@ -180,8 +183,9 @@ The first one is that the BM29 pipeline is based on Python whereas the
 \textsc{atsas} package is wrote in Fortran, so for a better 
 integration in the pipeline, a Python code could be advantageous. 
 %atsas en Fortran ???
-The fact that the programs from this package are closed source add 
-difficulties for their integration in the pipeline. 
+The fact that the programs from this package are closed source and 
+changing from version to version add difficulties for their 
+integration in the pipeline. 
 An other reason come from the execution times of these programs which 
 make the ab-initio modelling the bottleneck of the BM29 pipeline. 
 Furthermore, it could happened that the process was aborted because of 
@@ -192,17 +196,20 @@ In accordance with these observations, it was decided to create a
 homemade package to overpass these data-analysis problems. 
 These package has been called FreeSAS, is open source and free (under 
 the MIT License). 
-It will be write in Python and its aim will be to provide tools for 
-the BioSAXS data analysis, with an execution time optimised and 
-providing reliable results. 
-The training was dedicated to this Python package, and especially the 
+Written in Python, it aims at providing tools for the BioSAXS data 
+analysis, with an execution time optimised and providing reliable 
+results. 
+The subject was dedicated to this Python package, and especially the 
 re-implementation of the superimposition of the DAM (so previously 
 done by \textit{supcomb}) and the selection of those to keep along the 
-process.
+process.\\
+
+In the following chapter, we will describe all the implementation 
+computed, and the theory behind them, to reach our aim. 
+Then, in chapter 3, ....... %a preciser plus tard
 
 
-\chapter{FreeSAS implementation}%titre temporaire ???
-
+\chapter{FreeSAS implementation}
 
 As presented previously, FreeSAS is a Python package write to be a 
 tool for BioSAXS data-analysis. 
