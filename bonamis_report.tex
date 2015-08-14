@@ -36,20 +36,23 @@
 \end{titlepage}
 
 
-\tableofcontents
-\addcontentsline{toc}{chapter}{Table of contents}
-
 \chapter*{Acknowledgements}
 \addcontentsline{toc}{chapter}{Acknowledgements}
+\pagenumbering{Roman}
     %-------------------------------------
     % Page pour les divers remerciements
     %-------------------------------------
 
-%mettre une sorte d'abstract avant le premier chapitre ???
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{Table of contents}
+\pagenumbering{arabic}
 
 
 \chapter{Introduction}
-
+    %-------------------
+    % Premier chapitre   
+    %-------------------
 
 \section{The European Synchrotron Radiation Facility}
 
@@ -210,11 +213,13 @@ Then, in chapter 3, ....... %a preciser plus tard
 
 
 \chapter{FreeSAS implementation}
+    %--------------------
+    % Deuxieme chapitre  
+    %--------------------
 
-As presented previously, FreeSAS is a Python package write to be a 
-tool for BioSAXS data-analysis. 
-It is compound of several modules, each adapted for the execution of a 
-special task. 
+As presented previously, FreeSAS is a Python package for BioSAXS data-
+analysis. 
+It is compound of several modules, each focussing on a special task. 
 Here is presented the implementation of FreeSAS, but gathering some 
 modules in several workgroups to well explain both:
 \begin{itemize}
@@ -230,30 +235,31 @@ to create a "global process" computing the wanted result.
 
 The code wrote has to be able to work in the BM29 pipeline presented 
 in the previous chapter. 
-As a piece of a biggest program, he has inputs comming from the 
-program used before it and has to provide outputs which can be used by 
-the program launched after it. 
+As a piece of a large program, he has inputs comming from the program 
+used before it and has to provide outputs which can be used by the 
+program launched after it. 
 Here we will focus on the reading of the inputs data and the ones we  
 are interested in and why.\\
 
 The inputs of the "box" we have to build are the outputs DAM of the 
 \textit{dammif} program. 
-These data we dispose are under a special format called PDB for 
+These data we dispose are in files in a special format called PDB for 
 Protein Data Bank. %citer quelquechose pour format PDB ???
 The PDB format is used to provide a standard representation of 
-macromolecular structure data, and especially those from X-ray 
-scattering experiments. 
+macromolecular structure data. 
 For the processing we will have to apply to these dummy-atoms model, 
-we need to retrieve two things from the pdb file of the DAM.\\
+we need to retrieve two things from the pdb file of the DAM: the atom 
+beads' coordinates and the quality of the model.\\
 
-The first one is the $R-factor$ of the model. 
-This number represent the quality of the model, calculated using the 
+The quality of the model is represented as the $R-factor$ and the 
+$\chi^2$. 
+Those numbers represent the quality of the model, calculated using the 
 difference between the SAXS curve which could be retrieve if the real 
 protein in the sample was this model and the actual curve obtained by 
 SAXS experiment. 
-This image of the goodness of the fit of this model is not used 
+These images of the goodness of the fit of this model is not used 
 straightway in the data treatment but only in the selection part of 
-the algorithm; so we will see how we use it in the fourth section.\\
+the algorithm; so we will see how we use it in the fifth section.\\
 
 The second data to retrieve are the dummy-atoms coordinates. 
 As it has been mentioned, we want to retrieve the low-resolution 
@@ -290,11 +296,13 @@ Discrepancy (NSD), introduced by Kozin and Svergun in their paper
 models} \cite{supcomb}. 
 This tool allows to quantify the dissimilarity between two sets of 
 point, in our case in a three-dimensions space. 
-It has been built has an analogue to the standard Euclidian distance.\\
+It has been built has an analogue to the standard Euclidian distance 
+(it is normalized, so not homogeneous to a distance).\\
 
 The NSD is introduced with the following formula:\\
 \[
-\rho(S_{1},S_{2})={(1/2)[\frac{1}{N_{1}d_{2}^2} \cdot \sum\limits_{i=1}^{N_{1}} \rho^2(s_{1i}, S_{2}) + \frac{1}{N_{2}d_{1}^2} \cdot \sum\limits_{i=1}^{N_{2}} \rho^2(s_{2i}, S_{1})]}^{1/2}
+\rho(S_{1},S_{2})= \frac{1}{2} \sqrt {\frac{1}{N_{1}d_{2}^2} 
+\cdot \sum\limits_{i=1}^{N_{1}} \rho^2(s_{1i}, S_{2}) + \frac{1}{N_{2}d_{1}^2} \cdot \sum\limits_{i=1}^{N_{2}} \rho^2(s_{2i}, S_{1})}
 \]
 \\
 There, $S_{1}$ is the model \textit{1} set of points ($N_{1}$ points). 
@@ -333,7 +341,7 @@ With the data extracted of pdb files and the NSD tool, we should be
 able to calculate the dissimilarity between two models. 
 The fact is that we need other tools for it because of the arrangement 
 of the dammif models. 
-Actually the DAM we dispose are randomly positioned, so at this moment 
+Actually the DAM we dispose are randomly oriented, so at this moment 
 of the data-analysis, the NSD between two models do not show their 
 difference but only the spatial distance that separates them. 
 That is why we have to first superimpose the models so that the NSD 
@@ -343,8 +351,7 @@ program with parameters needed for it.\\
 
 To superimpose two DAM with their set of dummy-atoms $S_{1}$ and 
 $S_{2}$, we have used the algorithm defined in Kozin and Svergun 
-publication previously quoted \cite{supcomb}. 
-It describe a three-steps process to reach our aim.\\
+publication \cite{supcomb} as a three-steps process.\\
 
 The first stage consists in superimposing both models center of mass 
 (COM). 
@@ -361,33 +368,9 @@ Thus, to send $S_{2}$ on $S_{1}$, we apply it two transformations:
 $T_{2}^0$ first and $(T_{1}^0)^{-1}$, where $(T_{1}^0)^{-1}$ is the 
 reverse of the translation $T_{1}^0$.\\
 
-The following step to superimpose correctly $S_{2}$ on $S_{1}$ is the 
-selection of an enantiomorph. 
-In fact, two enantiomorphs of a macromolecule generate the same SAXS 
-curve, so that this method do not allows to segregate them. 
-Thus, we do not make a difference for our data-analysis between two 
-enantiomorphs; and it needs to be implemented. 
-For it, eight transformations are applied on $S_{2}$, the eight 
-possible transformation matrices as follow:
-\[
-\begin{pmatrix}
- \pm 1 & 0 & 0 & 0 \\
- 0 & \pm 1 & 0 & 0 \\
- 0 & 0 & \pm 1 & 0 \\
- 0 & 0 & 0 & 1
-\end{pmatrix}
-\]\\
-And after each transformation, the NSD between $S_{1}$ and $S_{2}$ is 
-computed. 
-The one minimizing the NSD is kept as the good symmetry for the 
-following steps.\\
-
 Next come the alignment stage. 
-At the moment of the superimposition, both centers of mass are in the 
-same position and both models are in the same enantiomorphic 
-structure. 
-To refine their superimposition, a rotation is performed on the second 
-model. 
+To refine the superimposition of the two models, a rotation is 
+performed on the second one. 
 This rotation aims to align the principles axis of inertia of both 
 DAM. 
 To compute them, we first need to know the inertia matrix of the 
@@ -416,8 +399,8 @@ I_{ij} = \frac{1}{N_{k}} \cdot \sum\limits_{q=1}^{N_{k}}
  (x_{kq}^l - {x_{kq}^l}^0)^2 -  (x_{kq}^i - {x_{kq}^i}^0) 
  \cdot (x_{kq}^j - {x_{kq}^j}^0)]
 \]\\
-It appears that $I_{k}$ tensor is symmetric so we know that it can be 
-diagonalized; we can compute its three eigenvalues 
+It appears that $I_{k}$ tensor is symmetric real so we know that it 
+can be diagonalized; we can compute its three eigenvalues 
 $\lambda_{k1} \geq \lambda_{k2} \geq \lambda_{k3}$ and the three 
 eigenvectors corresponding $v_{k1},\ v_{k2},\ v_{k3}$. 
 We can create a rotation matrix compound by the columns from 
@@ -426,17 +409,47 @@ eigenvalues.
 If this matrix is wrote $M_{k}$, is transposed $[M_{k}]^T$ is the 
 rotation matrix which align $S_{k}$ axis of inertia with the 
 coordinates axis \cite{supcomb}.\\
-With these roation matrix, we are able to align two models following 
-common axis. 
+With these rotation matrices, we are able to align two models 
+following $x,\ y,\ z$ coordinates axis.\\
+
+Before to be able to superimpose correctly $S_{2}$ on $S_{1}$, we need 
+to take into account enantiomorphs. 
+In fact, two enantiomorphs of a macromolecule generate the same SAXS 
+curve, so that this method do not allows to segregate them. 
+Thus, we do not make a difference for our data-analysis between two 
+enantiomorphs; and it needs to be implemented. 
+As we superimpose $S_{2}$ on $S_{1}$, we will force $S_{2}$ to be in 
+the same enantiomorphic form that $S_{1}$. 
+For it, $S_{2}$ and $S_{1}$ are set in their canonical position: 
+center of mass and the origin of axis and inertia axis aligned with 
+coordinates axis. 
+Eight transformations are performed on $S_{2}$ which correspond to the 
+eight possible symmetries, four for each enantiomorph. 
+Transformation matrices are as follow:
+\[
+\begin{pmatrix}
+ \pm 1 & 0 & 0 & 0 \\
+ 0 & \pm 1 & 0 & 0 \\
+ 0 & 0 & \pm 1 & 0 \\
+ 0 & 0 & 0 & 1
+\end{pmatrix}
+\]\\
+And after each transformation, the NSD between $S_{1}$ and $S_{2}$ is 
+computed. 
+The one minimizing the NSD is kept as the good symmetry for the 
+following steps. 
+The rotation matrix for $S_{2}$ is now the previous one $[M_{2}]^T$ 
+multiplied by the symmetry matrix, we will write it $R_{2}$.\\
+
 In our work we chose to always align the second DAM on the first one 
 initial position. 
 We saw before that first $S_{2}$ is translated to put its center of 
 mass on the one of $S_{1}$ using the translation 
 $(T_{1}^0)^{-1} \times T_{2}^0$. 
-In fact, a rotation step has to be inserted between these two 
-translations. 
+In fact, the rotation and enantiomorph selection steps has to be 
+inserted between these two translations. 
 Finally, the global transformation to apply to $S_{2}$ is 
-\[(T_{1}^0)^{-1} \times M_{1} \times M_{2}^T \times T_{2}^0\]
+\[(T_{1}^0)^{-1} \times M_{1} \times R_{2} \times T_{2}^0\]
 
 At the end of this process, we have two DAM whose centers of mass and 
 principles axis of inertia are superimposed; we will say canonically 
@@ -610,9 +623,10 @@ amet.
     %----------------------------------------
 
 
+\newpage                 %ne pas enlever (numerotation pour sommaire)
+\addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{plain}%ou autre ???
 \bibliography{bibliography}
-\addcontentsline{toc}{chapter}{Bibliography}
     %-------------------------
     % Bibliographie du stage
     %-------------------------
