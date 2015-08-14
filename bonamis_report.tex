@@ -453,25 +453,17 @@ Finally, the global transformation to apply to $S_{2}$ is
 
 At the end of this process, we have two DAM whose centers of mass and 
 principles axis of inertia are superimposed; we will say canonically 
-superimposed. 
-But even if this canonical superimposition produce a good fit of the 
-two models, it remains a coarse superimposition that we need to 
-optimize for a better understanding of the dissimilarity between two 
-dummy-atoms models.
+superimposed.
 
-\section{Refined superimposition and selection}
+\section{Refined superimposition}
 
-Once the reading, superimposing and NSD tools implemented, it remains 
-to establish the global process of DAM selection, the aim of our code. 
-In this section we will present how the coarse alignment has been 
-refined to then select the models we want to keep for the continuation 
-of the BM29 pipeline.\\
-
-We saw in the previous section how two models are canonically 
-superimposed in the code of FreeSAS, and that this coarse alignment is 
-not good enough for an efficient comparison between two models. 
-Nevertheless, the core of the superimposition process will remains the 
-same, we will add on it the refinment algorithm.\\
+The canonical superimposition presented before produce a good fit of 
+the two models (if they are similar), but it remains a coarse 
+alignment we need to optimize for a better understanding of the 
+dissimilarity between two DAM. 
+The core of the superimposition process remains the same, we will add 
+on it the following refinement algorithm.\\
+ 
 We have to optimize the transformation applied to $S_{2}$ to align it 
 with $S_{1}$, and the criterion of improvement will be the NSD, which 
 has to be as low as possible. 
@@ -494,16 +486,19 @@ returns the six refined parameters and the minimized NSD.
 Here, the superimposition of the two models is optimized, the final 
 NSD value is assumed to reflect the actual dissimilarity between them.\\
 
+\section{Dummy atoms models selection}
+
 The algorithm to superimpose two DAM has been fully described, it has 
 to be implemented in order to superimpose the $N$ models outgoing of 
-\textit{dammif}. 
+\textit{dammif}. \\
+
 For it, dammif pdb files are first read with the FreeSAS parser and 
 usefull data are extracted as presented before. 
-Some properties you introduced are then computed from it. 
+Some properties we introduced are then computed from it. 
 At this stage we dispose of $N$ detailled DAM and all we need to 
 superimpose them.\\
 The superimposition is implemented to obtain a NSD table $N*N$ sized. 
-Each model is represented by a row and a column. 
+Each model is represented by one row and one column. 
 Each bow in the table will contain the optimized NSD between the "row" 
 model and the "column" model. 
 To resume, we want a $N*N$ table with 
@@ -541,13 +536,13 @@ we know and the test is performed for each DAM remaining ($N-x$ at
 this level). 
 A new series of models is discarded (or neither), that give us the 
 $N-n$ acceptable DAM to follow the modelling process of EDNA. 
-Moreover, the model with the lower average NSD is set as "reference 
-model".\\
+Moreover, the model with the lower average NSD to all other valid 
+models is set as "reference model".\\
 
 At the end of it, data are formatted to present correctly the analysis 
 results. 
 First, what concern DAM is saved using PDB format to be accessible to 
-the next program \textit{damaver}. 
+the next program in the pipeline: \textit{damaver}. 
 The models are aligned on the reference one and are saved in this 
 position, as needed by \textit{damaver}. 
 Informations about the selection process are also saved to be 
@@ -556,13 +551,22 @@ A piece of code has been written to create figures with $\chi^2$ and
 $R-factor$ values and thresholds, the NSD table and the average NSD 
 values and threshold. 
 These figures are computed using the \textit{matplotlib} Python 
-library \cite{matplotlib}.
+library \cite{matplotlib}.\\
 
-%petite conclusion de ce chapitre ici ou plus longue intro dans le suivant ???
+We saw in this chapter the way FreeSAS package has been implemented in 
+order to superimpose and select dummy-atoms models from 
+\textit{dammif}. 
+FreeSAS provides tools to read and compute data from PDB files and to 
+process them using several algorithms. 
+At the end, it returns the valid DAM, superimposed and ready to be 
+used by \textit{damaver}, and all data usefull for the users.
+%Ajouter ici, brievement, ce qui va etre dit dans le prochain chapitre !!!
 
 
 \chapter{Pratical example}%titre temporaire
-
+    %---------------------
+    % Troisieme chapitre  
+    %---------------------
 
 \section{section nb 1}
 
