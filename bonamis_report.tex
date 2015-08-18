@@ -192,7 +192,7 @@ the problem) and \textit{damstart} generates an input model for
 subtacted curve. 
 The outcome of the Monte-Carlo refinement performed by \textit{dammin} is the
 final model which can be interpreted by biologists (comparison with fragments
-coming fron NMR or comparison with other technics).
+coming from NMR or comparison with other technics).
 
 \section{Traineeship subject}
 
@@ -561,7 +561,7 @@ the next program in the pipeline: \textit{damaver}.
 The models are aligned on the reference one and are saved in this 
 position, as needed by \textit{damaver}. 
 Informations about the selection process are also saved to be 
-available for the BM29 user. 
+available for the BM29 users. 
 A piece of code has been written to create figures with $\chi^2$ and 
 $R-value$ values and thresholds, the NSD table and the average NSD 
 values and threshold. 
@@ -574,50 +574,85 @@ order to superimpose and select dummy-atoms models from
 FreeSAS provides tools to read and compute data from PDB files and to 
 process them using several algorithms. 
 At the end, it returns the valid DAM, superimposed and ready to be 
-used by \textit{damaver}, and all data usefull for the users.
-%Ajouter ici, brievement, ce qui va etre dit dans le prochain chapitre !!!
+used by \textit{damaver}, and all data usefull for the users.\\
+We will now see an usage of FreeSAS package with data of a SAXS 
+experiment on the lysozyme protein.
 
 
-\chapter{Pratical example}%titre temporaire
+\chapter{Lysozyme modeling with FreeSAS}%titre ???
     %---------------------
     % Troisieme chapitre  
     %---------------------
 
-\section{section nb 1}
+In this chapter we will present some results obtained using FreeSAS 
+tools to study a protein called lysozyme, well known because 
+frequently studied in biology. 
+This protein is in particular present in egg white.\\
+In a first section will be described the program used for this data 
+treatment. 
+Then, we will presents the results returned by this program. 
+This chapter will end with a presentation of our program's performance 
+in comparison with the corresponding ones in the \textsc{atsas} 
+package.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Praesent hendrerit mollis nisl, vel varius urna iaculis at.
-Sed vel consequat enim.
-Nulla sit amet blandit sapien.
-Praesent sagittis varius dui non sollicitudin.
-Integer ut dignissim ex, non scelerisque erat.
-Etiam in tellus lobortis, condimentum purus ac, volutpat odio.
-Nunc dictum maximus orci id iaculis.
-Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
-per inceptos himenaeos.
-Phasellus consequat, magna ac mattis mollis, diam nisl sagittis erat, 
-quis congue nunc massa at odio.
-Vivamus eleifend sollicitudin lorem, varius posuere massa cursus sit 
-amet.
+\section{SuPyComb script}
 
-\section{section nb 2}
+The tools from FreeSAS has been integrated into the pipeline of BM 29, 
+as mentioned in the submitted publication of the beamline 
+\cite{bm29news}, but are also available in a stand-alone program: 
+SuPyComb.\\
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Praesent hendrerit mollis nisl, vel varius urna iaculis at.
-Sed vel consequat enim.
-Nulla sit amet blandit sapien.
-Praesent sagittis varius dui non sollicitudin.
-Integer ut dignissim ex, non scelerisque erat.
-Etiam in tellus lobortis, condimentum purus ac, volutpat odio.
-Nunc dictum maximus orci id iaculis.
-Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
-per inceptos himenaeos.
-Phasellus consequat, magna ac mattis mollis, diam nisl sagittis erat, 
-quis congue nunc massa at odio.
-Vivamus eleifend sollicitudin lorem, varius posuere massa cursus sit 
-amet.
+The program is a Python script taking pdb files from \textit{dammif} 
+as arguments. 
+It performed the selection with the $R-value$, the superimposition of 
+the $N$ dummy-atoms models, the selection with the NSD mean, the 
+selection of the reference model and superimpose all valid models on 
+the reference one.\\
+SuPyComb has two different way to run depending on the number of 
+inputs models:
+\begin{itemize}
+  \item if there is only two models, the second one is simply 
+        superimpose on the first one as presented in chapter 2.
+        SuPyComb returns the final NSD value and a pdb file with 
+        coordinates of the second model aligned with the first one.
+  \item if there are more than two models, SuPyComb performs 
+        selections and superimposition presented just before. 
+        It return the $N*N$ NSD table, a graph with the $R-values$ and 
+        the maximal value and an other one with, for each DAM, the NSD 
+        mean with all others and the maximal value. 
+\end{itemize}
+Moreover, some options are available for SuPyComb users, and 
+especially these ones:
+\begin{itemize}
+  \item Slow mode / fast mode:
+  For the slow mode, the optimization of the NSD is done for each symmetry 
+  (ie. 8 times) whereas for the fast mode, the best symmetry is first 
+  choosen without optimization and only the NSD for this symmetry is 
+  optimized.
+  The result is that the slow mode is nearly 8 times slower than the fast 
+  one.
+  \item Enantiomorphs option:
+  This option can be used to authorize or not the program to look for 
+  enantiomorphs. 
+  If not, the program will not test 8 symmetries but only 4. 
+  Thus, it will not be able to recognize two enantiomorphs of the 
+  same protein.
+\end{itemize}
 
-\section{section nb 3}
+\section{Results of lysozyme study}%TODO revoir le titre
+
+Data of the lysozyme SAXS experiment we used is the scattering curve 
+included in the \textsc{atsas} package. 
+As a very common protein, very simple to study, it is used by 
+\textsc{atsas} for its tests. 
+We took the scattering curve as argument for \textit{dammif}, that we 
+ran 16 times. 
+Thus, we dispose of 16 pdb files containing data for 16 dummy-atoms 
+models which should correspond to the lysozyme structure.\\
+
+
+
+\section{SuPyComb's performances}%TODO titre definitif ?
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 Praesent hendrerit mollis nisl, vel varius urna iaculis at.
