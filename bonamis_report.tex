@@ -192,7 +192,7 @@ the problem) and \textit{damstart} generates an input model for
 subtacted curve. 
 The outcome of the Monte-Carlo refinement performed by \textit{dammin} is the
 final model which can be interpreted by biologists (comparison with fragments
-comming fron NMR or comparison with other technics).
+coming from NMR or comparison with other technics).
 
 \section{Traineeship subject}
 
@@ -252,12 +252,13 @@ to create a "global process" computing the wanted result.
 \section{Reading inputs data}
 
 The library has to be able to work within the BM29 pipeline presented 
-in section \ref{bm29}. 
-As a piece of a larger piece of software, it has to deal with inputs 
-coming from the \textsc{atsas} programs used previously and needs to provide
-outputs compatible with \textsc{atsas}. 
-Here we will focus on the reading of the inputs structure and the ones we  
-are interested in and why.\\
+in section \ref{bm29} and used in production for a few years  now. 
+As a component of a larger piece of software, it has to deal with inputs 
+coming from other software, especially the \textsc{atsas} programs used
+upstream and needs to provide outputs compatible with \textsc{atsas}, also used
+downstream.
+Here we will focus on the reading of the input structures and describe the
+ones we are interested in.
 
 The inputs of the superimposition module is the
 outputs DAM of the various \textit{dammif} runs. 
@@ -268,39 +269,33 @@ The (simplistic) parser written copes for two things: reading the atoms'
 coordinates (beads) and retriving the quality of the fit of the model on the
 experimental data ($\chi^2$ and $R$-value).
 Those numbers represent the quality of the model, calculated using the 
-difference between the SAXS curve which could be retrieve if the real 
-protein in the sample was this model and the actual curve obtained by 
-SAXS experiment. 
-These images of the goodness of the fit of this model is not used 
-straightway in the data treatment but only in the selection part of 
-the algorithm; so we will see how we use it in the fifth section.\\
+difference between the actual SAXS curve and the simulated one from the
+corresponding model. 
+Those goodness of fit values are only used to reject model badly fitting
+experimental data.
 
-The second data to retrieve are the dummy-atoms coordinates. 
-As it has been mentioned, we want to retrieve the low-resolution 
-structure of the molecule from the studied sample and for it we create 
-a model with dummy-atoms. 
-They are not actual atoms, they mean that, at this position, there is 
-some material (the molecule), and where there is no dummy-atoms, it is 
-solvent. 
-Typically, the DAM we worked with were compound by 500 dummy-atoms (
-order of magnitude).\\
-The parser we wrote was dedicated to these task: to read the pdb file 
+The second piece of information to retrieve is the dummy-atoms coordinates. 
+As already mentioned, only low-resolution information are available in SAXS data 
+hence the structure of model is made of dummy-atoms.
+They are not actual atoms, but indicate there is 
+some material (the macromolecule) at their positions, and where there is
+no dummy-atoms, it is solvent. 
+Typical DAM used in this project had 500 dummy-atoms (order of magnitude).
+The parser written was dedicated to these task: to read the pdb file 
 to select the data we needed, and then to keep in memory in one hand 
-the $R-factor$ of the DAM and in an other hand the coordinates (x, y, 
-z) of each dummy-atoms of the model. 
+the $R-value$ of the DAM and in an other hand the Cartesian coordinates (x, y, 
+z, in Angstrom) of each dummy-atoms of the model. 
 These coordinates are stored as a 2-d numpy array from the 
 \textit{NumPy} package for scientific Python \cite{numpy}; they are 
 necessary for geometric handling we will have to do along our process.
 
-\section{NSD calculation}
+\section{Similarity calculation}
 
-Now we have to come back to what we saw at the end of the previous 
-chapter and at the beginning of this one. 
-We saw that our code has $N$ DAM as inputs and $N - n$ as outputs, and 
-that the choice of the models to discard depend of the similarity of 
-each model with the other. 
-So we have to detail the way this similarity is measured and how it 
-has been implemented in the FreeSAS package.\\
+To be able to merge similar models, and reject dis-similar ones,
+one needs to define the similarity of two models. 
+This section introduces a ``distance'' to measure this  
+similarity and describes its implemention in the FreeSAS
+package.
 
 The likeness of two 3-d models can be, at first glance, very 
 subjective. 
@@ -308,64 +303,60 @@ To be able to compute it, we use a metric called Normalized Spatial
 Discrepancy (NSD), introduced by Kozin and Svergun in their paper 
 \textit{Automated matching of high- and low-resolution structural 
 models} \cite{supcomb}. 
-This tool allows to quantify the dissimilarity between two sets of 
-point, in our case in a three-dimensions space. 
-It has been built has an analogue to the standard Euclidian distance 
-(it is normalized, so not homogeneous to a distance).\\
+This value quantifies the dissimilarity between two sets of 
+point $S_{1}$ and $S_{2}$, in our case in a three-dimensionnal space.
+Those sets are neither ordered nor of same size ($N_{1}$ points for
+$S_{1}$ and $N_{2}$ points for
+$S_{2}$), making useless other techniques like Kabsch method
+\cite{kabsh1976}.
+The NSD has been built has an analogue to the standard Euclidian distance,
+but as it is normalized, it is not homogeneous to a distance:
 
 The NSD is introduced with the following formula:\\
 \[
 \rho(S_{1},S_{2})= \frac{1}{2} \sqrt {\frac{1}{N_{1}d_{2}^2} 
 \cdot \sum\limits_{i=1}^{N_{1}} \rho^2(s_{1i}, S_{2}) + \frac{1}{N_{2}d_{1}^2} \cdot \sum\limits_{i=1}^{N_{2}} \rho^2(s_{2i}, S_{1})}
 \]
-\\
-There, $S_{1}$ is the model \textit{1} set of points ($N_{1}$ points). 
+
 For a point $s_{1i}$ in $S_{1}$, the Euclidian distance with all the 
 points of $S_{2}$ is computed, and the minimal one is denoted as 
 $\rho(s_{1i}, S_{2})$. 
 The last parameters present in the formula is the fineness $d_{i}$. 
 It correspond to the average Euclidian distance between a point of 
-$S_{i}$ and its first neighbouring points.\\
-The NSD respect several needs we have:
+$S_{i}$ and its nearest neighbour.\\
+The NSD can be used to measure the similarity of two sets of points as:
 \begin{itemize}
  \item it is symmetric, $\rho(S_{1},S_{2}) = \rho(S_{2},S_{1})$
  \item it is stable, $\rho(S_{1},S_{2})$ function has a stable minimum
  \item $\rho(S_{1},S_{2}) = 0$ only if $S_{1} = S_{2}$
 \end{itemize}
 
-The calculation of the NSD is the core of our process because it is 
-our indicator of the similarity between two DAM. 
-This importance has also an impact on the execution time of the 
-process: it is the called method which take the most of time. 
-As this parameter was a key of the project, the NSD computation had to 
-be optimized in term of speed.\\
-The first thing done for it was to re-wrote the calculation of the NSD 
-in Cython \cite{cython}. 
-This programming language translates Python code to an equivalent C 
-code which allows major gain in term of execution time.\\
-To have again speed improvements, a second step has been performed: 
-this piece of code has also been parallelized with OpenMP. 
-Indeed the parallelization of some calculations allows to take 
-advantage of the presence of a multi-core processor on the computer, 
-which is the case on the computers used on the beamline BM29.
+As the calculation of the NSD is the core of our process, it is of prime  
+importance to optimize its implementation. This has been optimized in 3
+subsequent steps (and supervised by careful profiling):
+\begin{enumerate}
+  \item numpy implementation calculating the 2d table of distances from all
+  atoms in $S_{1}$ to any atoms in $S_{2}$, performing subsequently the minimum
+  search in each row and column.
+  \item Cython implementation \cite{cython} (a kind of Python code translated
+  to C) which performs simulatneously the two minimum search (along row and
+  column) for each pair of atoms, preventing a large 2d array allocation.
+  \item An OpenMP \cite{openmp} implementation of the Cython version taking
+  benefit of the multi-core systems available on modern computers.
+\end{enumerate}
 
 \section{Coarse superimposition of models}
 
-With the data extracted of pdb files and the NSD tool, we should be 
-able to calculate the dissimilarity between two models. 
-The fact is that we need other tools for it because of the arrangement 
-of the dammif models. 
-Actually the DAM we dispose are randomly oriented, so at this moment 
-of the data-analysis, the NSD between two models do not show their 
-difference but only the spatial distance that separates them. 
-That is why we have to first superimpose the models so that the NSD 
-only point out the dissimilarity. 
-Here we will define the superimposition algorithm followed in our 
-program with parameters needed for it.\\
+The DAM, as generated by \textit{dammif}, are randomly oriented, so the NSD
+between two models is not representative of their similarity.
+That is why we have to first superimpose the models, using translation, rotation
+and symmetries, so that the NSD only point out the dissimilarity. 
 
-To superimpose two DAM with their set of dummy-atoms $S_{1}$ and 
-$S_{2}$, we have used the algorithm defined in Kozin and Svergun 
-publication \cite{supcomb} as a three-steps process.\\
+The strategy implemented to superimpose two DAM (sets of
+dummy-atoms $S_{1}$ and $S_{2}$) is similat to the one described in
+Kozin and Svergun's publication \cite{supcomb} and goes via s a three-steps
+process to bring them in their cannonical orientation and consits of a translation on their
+relative center of mass and rotation to align the inertial axies 
 
 The first stage consists in superimposing both models center of mass 
 (COM). 
@@ -533,7 +524,7 @@ superimpositions instead of $N*N$.\\
 Once the NSD table generated, we dispose of all we need to select the 
 dummy-atoms models.\\
 The first criteria of selection have already been presented in 
-\ref{modelling} section: the $\chi^2$ and the $R-factor$. 
+\ref{modelling} section: the $\chi^2$ and the $R-value$. 
 These two parameters are not dependent of the DAM position, they are 
 computed before any movements. 
 So for a gain of execution time, the test on them are computed before 
@@ -562,7 +553,7 @@ position, as needed by \textit{damaver}.
 Informations about the selection process are also saved to be 
 available for the BM29 user. 
 A piece of code has been written to create figures with $\chi^2$ and 
-$R-factor$ values and thresholds, the NSD table and the average NSD 
+$R-value$ values and thresholds, the NSD table and the average NSD 
 values and threshold. 
 These figures are computed using the \textit{matplotlib} Python 
 library \cite{matplotlib}.\\
