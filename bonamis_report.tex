@@ -652,7 +652,7 @@ models which should correspond to the lysozyme structure.\\
 
 We ran \textit{SuPyComb} with these 16 files as arguments and with 
 options mode fast and enantiomorphs allowed. 
-The first return is the following graph (figure~\ref{fgr:rfactor}): 
+The first return is the graph presented in figure~\ref{fgr:rfactor}. 
 \begin{figure}
 \centering
 \includegraphics[scale=0.6]{Rfactor.png}
@@ -666,7 +666,37 @@ times the standard deviation.
 The DAM dammif-11 is automatically flagged as non-valid and discarded. 
 The model will not be take into account in the following of the 
 \textit{SuPyComb} process, that will save execution time.\\
-
+After all the process we detailled in chapter 2, \textit{SuPyComb} 
+returns the two graphs presented in figure~\ref{fgr:nsd}. 
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{nsd.png}
+\caption{Two graphs computed by \textit{SuPyComb}, the NSD table and 
+         the nsd mean with all other DAM for each model}
+\label{fgr:nsd}
+\end{figure}
+The $16*16$ NSD table details the distance between each pair of 
+models. 
+The color scale accentuate the biggest and the lowest NSD values, 
+which gives a clear idea of the similar models and the dis-similar 
+ones.\\
+The second graph ("NSD between any model and all others") give us 
+five informations:
+\begin{itemize}
+\item as it is called, the NSD between any model and all others
+\item the $NSD_{max}$ computed as the mean plus the standard deviation
+\item the previously discarded models, and why they have been discarded
+\item the models discarded due to their dis-similarity
+\item the reference model, the one with the lowest value of NSD with 
+      all other models
+\end{itemize}
+Here, the model "model-03" (which is the model "dammif-03" after 
+translations and rotations) is flagged as non-valid.\\
+Finally, remaining models (the ones flagged as valid) are superimpose 
+on the reference model, here the DAM "model-12". 
+The final positions of the 16 dummy-atoms models are then saved in 16 
+pdb files, compatible with other \textsc{atsas} programs which may be 
+ran.
 
 \section{SuPyComb's performances}%TODO titre definitif ?
 
