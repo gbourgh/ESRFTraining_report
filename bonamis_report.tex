@@ -600,7 +600,7 @@ package.
 The tools from FreeSAS has been integrated into the pipeline of BM 29, 
 as mentioned in the submitted publication of the beamline 
 \cite{bm29news}, but are also available in a stand-alone program: 
-SuPyComb.\\
+\textit{SuPyComb}.\\
 
 The program is a Python script taking pdb files from \textit{dammif} 
 as arguments. 
@@ -608,20 +608,20 @@ It performed the selection with the $R-value$, the superimposition of
 the $N$ dummy-atoms models, the selection with the NSD mean, the 
 selection of the reference model and superimpose all valid models on 
 the reference one.\\
-SuPyComb has two different way to run depending on the number of 
-inputs models:
+\textit{SuPyComb} has two different way to run depending on the number 
+of inputs models:
 \begin{itemize}
   \item if there is only two models, the second one is simply 
         superimpose on the first one as presented in chapter 2.
-        SuPyComb returns the final NSD value and a pdb file with 
-        coordinates of the second model aligned with the first one.
-  \item if there are more than two models, SuPyComb performs 
+        \textit{SuPyComb} returns the final NSD value and a pdb file 
+        with coordinates of the second model aligned with the first one.
+  \item if there are more than two models, \textit{SuPyComb} performs 
         selections and superimposition presented just before. 
         It return the $N*N$ NSD table, a graph with the $R-values$ and 
         the maximal value and an other one with, for each DAM, the NSD 
         mean with all others and the maximal value. 
 \end{itemize}
-Moreover, some options are available for SuPyComb users, and 
+Moreover, some options are available for \textit{SuPyComb} users, and 
 especially these ones:
 \begin{itemize}
   \item Slow mode / fast mode:
@@ -650,6 +650,22 @@ ran 16 times.
 Thus, we dispose of 16 pdb files containing data for 16 dummy-atoms 
 models which should correspond to the lysozyme structure.\\
 
+We ran \textit{SuPyComb} with these 16 files as arguments and with 
+options mode fast and enantiomorphs allowed. 
+The first return is the following graph (figure~\ref{fgr:rfactor}): 
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{Rfactor.png}
+\caption{Graph containing the $R-value$ of each DAM, the maximal value 
+         and the discarded DAM}
+\label{fgr:rfactor}
+\end{figure}
+It points out the fact that the $R-value$ of one of the models (dammif-
+11) exceed the $R_{max}$, which is the mean of the $R-values$ plus two 
+times the standard deviation. 
+The DAM dammif-11 is automatically flagged as non-valid and discarded. 
+The model will not be take into account in the following of the 
+\textit{SuPyComb} process, that will save execution time.\\
 
 
 \section{SuPyComb's performances}%TODO titre definitif ?
