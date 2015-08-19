@@ -646,9 +646,9 @@ included in the \textsc{atsas} package.
 As a very common protein, very simple to study, it is used by 
 \textsc{atsas} for its tests. 
 We took the scattering curve as argument for \textit{dammif}, that we 
-ran 16 times. 
+ran 16 times in slow mode. 
 Thus, we dispose of 16 pdb files containing data for 16 dummy-atoms 
-models which should correspond to the lysozyme structure.\\
+models of nearly 3000 dummy-atoms each.\\
 
 We ran \textit{SuPyComb} with these 16 files as arguments and with 
 options mode fast and enantiomorphs allowed. 
@@ -697,23 +697,37 @@ on the reference model, here the DAM "model-12".
 The final positions of the 16 dummy-atoms models are then saved in 16 
 pdb files, compatible with other \textsc{atsas} programs which may be 
 ran.
+%TODO mettre en annexes une representation des modeles valides avec Pymol
+%avec une reference dans cette section ???
 
 \section{SuPyComb's performances}%TODO titre definitif ?
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Praesent hendrerit mollis nisl, vel varius urna iaculis at.
-Sed vel consequat enim.
-Nulla sit amet blandit sapien.
-Praesent sagittis varius dui non sollicitudin.
-Integer ut dignissim ex, non scelerisque erat.
-Etiam in tellus lobortis, condimentum purus ac, volutpat odio.
-Nunc dictum maximus orci id iaculis.
-Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
-per inceptos himenaeos.
-Phasellus consequat, magna ac mattis mollis, diam nisl sagittis erat, 
-quis congue nunc massa at odio.
-Vivamus eleifend sollicitudin lorem, varius posuere massa cursus sit 
-amet.
+Several sides of \textit{SuPyComb} make it interesting to use it in 
+place of \textsc{atsas}'s \textit{supcomb}.
+
+First, \textit{SuPyComb} is able to take as arguments several DAM 
+whereas \textit{supcomb} only superimpose two models. 
+Thus, for the superimposition of 16 models, it has to read several 
+times each models (total of $16*16$ reading), whereas 
+\textit{SuPyComb} reads only one time each pdb file.\\
+Moreover, \textit{supcomb} do not generates graphs we need 
+($R-values$, NSD table, NSD means), so it has to be done elsewhere. 
+The fact that \textit{SuPyComb} generates it automatically simplify 
+EDNA's run.\\
+The execution time of \textit{SuPyComb} is also a great advantage 
+comparatively to \textit{supcomb}. 
+Some tests has been performed to compare execution times with several 
+option of both programs (always with the same SAXS curve of the 
+Lysozyme protein). 
+Results are presented in the appendix.\\%TODO ajouter reference et commentaires
+Can be added to these advantages the fact, already mentionned, that a 
+Python implementation provides a better integration into EDNA 
+pipeline.\\
+
+We saw in this chapter that FreeSAS provides tools to analyse and 
+handle effectively data from \textit{dammif}. 
+\textit{SuPyComb} program from FreeSAS returns good results, that are 
+compatible with others \textsc{atsas} programs used into EDNA.
 
 
 \chapter*{Conclusion and outlook}
