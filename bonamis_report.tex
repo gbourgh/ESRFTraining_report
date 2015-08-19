@@ -778,6 +778,25 @@ compatible with others \textsc{atsas} programs used into EDNA.
     % Chapitre de conclusion + perspectives
     %----------------------------------------
 
+BioSAXS beamline BM29 aims at determine 3-dimensional structure of 
+proteins from SAXS experiments. 
+A series of tasks, controlled by EDNA and using several programs of 
+the \textsc{atsas} package, provides a structural low-resolution model 
+of the studied protein.\\
+
+The FreeSAS package has been implemented to replace some parts of 
+\textsc{atsas} that did not satisfy the beamline anymore. 
+With FreeSAS, BM29 has tools to read, superimpose and select models 
+from \textit{dammif} efficiently. 
+As it is written in Python and open source, it removes some 
+difficulties from \textit{supcomb} integration into EDNA. 
+Moreover, its speed of execution partially improves the one of EDNA 
+pipeline.\\
+
+As FreeSAS has not been created only for this task, it remains to 
+develop the package to provides new tools able to replace other 
+problematic tools of \textsc{atsas}, as \textit{dammin}.
+
 
 \newpage                 %ne pas enlever (numerotation pour sommaire)
 \addcontentsline{toc}{chapter}{Bibliography}
