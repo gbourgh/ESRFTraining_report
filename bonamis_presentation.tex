@@ -94,8 +94,12 @@
 
 
 \section{SAXS et mod\'elisation structurale}
+%-------------------------------------------
+%----------------First part-----------------
+%-------------------------------------------
 
 \begin{frame}{G\'en\'eration de rayons X \`a l'ESRF}
+%---------------------------------------------------
 \vspace{-0.4cm}
 \'electrons$\rightarrow$linac$\rightarrow$$1^{er}$ acc\'el\'erateur
 $\rightarrow$ anneau de stockage (844m)
@@ -159,10 +163,39 @@ de la structure de la macromol\'ecule
 \end{frame}
 
 \begin{frame}{Mod\'elisation structurale}
-\lipsum[1]
+%----------------------------------------
+Traitement des donn\'ees exp\'erimentales : syst\`eme \textbf{EDNA}
+Programmes lanc\'es en s\'erie : 
+%pipeline simplifiee pour presentation
+\begin{enumerate}
+  \item \textit{dammif} $\Rightarrow$ cr\'eation de $N$ mod\`eles 3-d 
+    (Monte-carlo)
+  \item \textit{supcomb} $\Rightarrow$ superposition des mod\'eles, \'ecarte 
+    les "mauvais"
+  \item \textit{damaver} $\Rightarrow$ moyenne des mod\`eles valides
+  \item \textit{dammin} $\Rightarrow$ mod\`ele final, compatible avec la 
+    courbe initiale
+\end{enumerate}
+
+\begin{minipage}{0.50\linewidth}
+    mod\`eles 3-d basse r\'esolution (nm)\\
+    structure $\rightarrow$ pseudo-atomes\\
+    DAM = dummy-atoms model
+\end{minipage}
+\begin{minipage}{0.45\linewidth}
+    \begin{center}
+    \vspace{-0.3cm}
+    \hspace{-0.4cm}
+    \includegraphics[scale=0.3]{model.png}
+    \end{center}
+\end{minipage}
+
 \end{frame}
 
 \section{Impl\'ementation}%titre a voir !!!
+%-------------------------------------------
+%----------------Second part----------------
+%-------------------------------------------
 
 \begin{frame}{Une autre diapo}
 \lipsum[1]
@@ -170,6 +203,9 @@ de la structure de la macromol\'ecule
 
 
 \section{Exemple}%titre a voir selon l'exemple presente !!!
+%-------------------------------------------
+%----------------Third part-----------------
+%-------------------------------------------
 
 \begin{frame}{Et encore une autre}
 \lipsum[1]
