@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+\documentclass[12pt]{article}
 
 %-----------------------------------------------------------%
 %-------------TEST POUR LA FICHE DE SYNTHESE----------------%
@@ -8,6 +8,7 @@
 \usepackage{lipsum}
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{amsmath}
 
 \pagestyle{empty}
 \geometry{a4paper}
@@ -95,46 +96,58 @@
 
 \vspace{-0.6cm}
 %------bloc texte a gauche, image a droite------------------%
-\begin{minipage}{0.55\linewidth}
-    First, dummy-atoms models (DAM) are computed by the program 
-    \textit{dammif} using the scattering curve. 
-    An exemple of DAM is presented on right side (lysozyme protein).\\
-    These models come from a Monte-Carlo algorithm, so using statistics. 
+\begin{minipage}{0.60\linewidth}
+    \begin{center}\begin{large}
+    scattering curve$\overset{\textit{dammif}}{\longrightarrow}$dummy-atoms models (DAM)
+    \end{large}\end{center}
+    An exemple of DAM is presented on right side (lysozyme).\\
     To compute a reliable 3-d model of the protein, this process has to 
     be launched several time and "averaged". 
-    We wrote FreeSAS, a Python package to do a part of this work.
-
+    We wrote \textbf{FreeSAS}, a Python package to do a part of this work.
 \end{minipage} \hfill
-\begin{minipage}{0.4\linewidth}
+\begin{minipage}{0.35\linewidth}
     \begin{flushleft}
     \includegraphics[scale=0.3]{model.png}
     \end{flushleft}
 \end{minipage}
 %-----------------------------------------------------------%
 
-\vspace{-0.2cm}
+\vspace{-0.5cm}
 %------bloc texte a droite, image a gauche------------------%
 \begin{minipage}{0.35\linewidth}
     \begin{flushleft}
-    \includegraphics[scale=0.5]{nsdtable.png}
+    \includegraphics[scale=0.45]{nsdtable.png}
     \end{flushleft}
 \end{minipage} \hfill
 \begin{minipage}{0.60\linewidth}
-    BM 29 pipeline process run 16 \textit{dammif} from the scattering curve 
-    of the protein studied to obtain 16 DAM randomly oriented.\\
-    These DAM are first selected by FreeSAS by their goodness of fit (the 
-    SAXS curve). 
-    Then FreeSAS sort them by their likeness to discard dis-similar models. 
-    To measure the similarity we use the Normalized Spatial Discrepancy (NSD) 
-    introduced by Kozin and Svergun. 
-    DAM has to be superimpose so that NSD shows the actual dis-similarity and 
-    not a simple distance.\\
-    Superimposition of two models is performed computing a translation and a 
-    rotation. 
-    The translation superimpose the center of mass of both models and the 
-    rotation align their principle axis of inertia.\\
-    Once models are aligned, NSD is calculated and a 16*16 NSD table is 
+    \begin{large}
+    16 dammif ran $\longrightarrow$ 16 DAM ramdomly oriented
+    \end{large}\\
+    First, a selection by goodness of fit (SAXS curve) is performed.\\
+    Then FreeSAS measures the similarity between each models using the 
+    Normalized Spatial Discrepancy (NSD, Kozin and Svergun).\\
+    DAM are first superimposed using a translation and a rotation. 
+    Translation superimposes the center of mass of both models and the 
+    rotation aligns their principle axis of inertia.\\
+    After alignment, NSD are calculated and a 16*16 NSD table is 
     computed (on the left).
+\end{minipage}
+%-----------------------------------------------------------%
+
+\vspace{-0.5cm}
+%------bloc texte a gauche, image a droite------------------%
+\begin{minipage}{0.55\linewidth}
+    Most dis-similar models (by NSD) are discarded for the rest of the 
+    BM 29 pipeline.\\
+    Valid models are superimposed and their dummy-atoms coordinates are 
+    saved. 
+    Valid models among 16 \textit{dammif} models of lysozyme are 
+    presented on the right.
+\end{minipage} \hfill
+\begin{minipage}{0.4\linewidth}
+    \begin{flushleft}
+    \includegraphics[scale=0.3]{validmodels.png}
+    \end{flushleft}
 \end{minipage}
 %-----------------------------------------------------------%
 
@@ -142,17 +155,17 @@
 %Notes de fin-----------------------------------------------%
 \begin{center}
 \fbox{\begin{minipage}{\linewidth}
-\begin{minipage}{0.60\linewidth}
-    Kozin and Svergun, \textit{Journal of Applied Crystallography, 2001}
+\begin{minipage}{0.70\linewidth}
+    reference: Kozin and Svergun, \textit{Journal of Applied Crystallography, 2001}
 \end{minipage}
 \hfill
-\begin{minipage}{0.35\linewidth}
-    Et une autre au cas o\`u
+\begin{minipage}{0.25\linewidth}
+    
 \end{minipage}
 
 \begin{minipage}{0.95\linewidth}
     \textbf{Keywords}: 
-    SAXS, structural modeling, Python
+    SAXS, structural modeling, Python 
 \end{minipage}
 \end{minipage}
 }
