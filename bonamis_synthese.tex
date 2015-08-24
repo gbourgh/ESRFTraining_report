@@ -70,7 +70,7 @@
 \begin{center}
     \fbox{\begin{minipage}{\linewidth}
     \begin{center}\bfseries\Huge 
-        Modeling of the shape of proteins from SAXS data
+        Modeling of protein shapes from SAXS data
     \end{center}
     \end{minipage}}
 \end{center}
@@ -84,8 +84,8 @@
     Small Angles X-ray Scattering experiments of biological macromolecule 
     solutions at the BioSAXS beamline BM29 at the ESRF aim at determining 
     their 3-dimensional structures in a natural state with a ’low’ 
-    resolution, a few nm.
-    SAXS experiment provides a 2-dimensional scattering image. 
+    resolution, a few nanometres.
+    SAXS experiment provides a 2-D image. 
     Using the cylindrical symmetry along the transmitted beam, an 
     azimuthal integration and a background correction are performed to 
     obtain the scattering curve of the sample. 
@@ -94,32 +94,40 @@
 \end{center}
 %-----------------------------------------------------------%
 
-\vspace{-0.6cm}
-%------bloc texte a gauche, image a droite------------------%
-\begin{minipage}{0.60\linewidth}
+
+%----image a gauche, bloc texte au centre, image a droite---%
+\begin{minipage}{0.20\linewidth}
+    \begin{flushleft}
+    \includegraphics[scale=0.22]{saxscurve.png}
+    \end{flushleft}
+\end{minipage} \hfill
+\begin{minipage}{0.55\linewidth}
     \begin{center}\begin{large}
-    scattering curve$\overset{\textit{dammif}}{\longrightarrow}$dummy-atoms models (DAM)
+    scattering curve$\xrightarrow[]{dammif}$dummy atom models
     \end{large}\end{center}
-    An exemple of DAM is presented on right side (lysozyme).\\
+
+    An exemple of DAM (dummy atom model) is presented on right side 
+    an a saxs curve on left side (lysozyme).\\
     To compute a reliable 3-d model of the protein, this process has to 
     be launched several time and "averaged". 
-    We wrote \textbf{FreeSAS}, a Python package to do a part of this work.
+    \textbf{FreeSAS}, a Python package, has been developed to perform a 
+    part of this work.
 \end{minipage} \hfill
-\begin{minipage}{0.35\linewidth}
+\begin{minipage}{0.20\linewidth}
     \begin{flushleft}
-    \includegraphics[scale=0.3]{model.png}
+    \includegraphics[scale=0.2]{model.png}
     \end{flushleft}
 \end{minipage}
 %-----------------------------------------------------------%
 
-\vspace{-0.5cm}
+\vspace{0.4cm}
 %------bloc texte a droite, image a gauche------------------%
-\begin{minipage}{0.35\linewidth}
+\begin{minipage}{0.3\linewidth}
     \begin{flushleft}
-    \includegraphics[scale=0.45]{nsdtable.png}
+    \includegraphics[scale=0.4]{nsdtable.png}
     \end{flushleft}
 \end{minipage} \hfill
-\begin{minipage}{0.60\linewidth}
+\begin{minipage}{0.65\linewidth}
     \begin{large}
     16 dammif ran $\longrightarrow$ 16 DAM ramdomly oriented
     \end{large}\\
@@ -129,15 +137,15 @@
     DAM are first superimposed using a translation and a rotation. 
     Translation superimposes the center of mass of both models and the 
     rotation aligns their principle axis of inertia.\\
-    After alignment, NSD are calculated and a 16*16 NSD table is 
-    computed (on the left).
+    After alignment, NSD are calculated and a $16 \times 16$ NSD table 
+    is computed (on the left).
 \end{minipage}
 %-----------------------------------------------------------%
 
 \vspace{-0.5cm}
 %------bloc texte a gauche, image a droite------------------%
 \begin{minipage}{0.55\linewidth}
-    Most dis-similar models (by NSD) are discarded for the rest of the 
+    Most dissimilar models (by NSD) are discarded for the rest of the 
     BM 29 pipeline.\\
     Valid models are superimposed and their dummy-atoms coordinates are 
     saved. 
@@ -146,7 +154,7 @@
 \end{minipage} \hfill
 \begin{minipage}{0.4\linewidth}
     \begin{flushleft}
-    \includegraphics[scale=0.3]{validmodels.png}
+    \includegraphics[scale=0.35]{validmodels.png}
     \end{flushleft}
 \end{minipage}
 %-----------------------------------------------------------%
@@ -155,17 +163,18 @@
 %Notes de fin-----------------------------------------------%
 \begin{center}
 \fbox{\begin{minipage}{\linewidth}
-\begin{minipage}{0.70\linewidth}
+\begin{minipage}{\linewidth}
     reference: Kozin and Svergun, \textit{Journal of Applied Crystallography, 2001}
 \end{minipage}
-\hfill
-\begin{minipage}{0.25\linewidth}
-    
+
+\begin{minipage}{\linewidth}
+SAXS Small Angles X-ray Scattering, NSD Normalized Spacial Discrepancy, DAM dummy atom model
 \end{minipage}
 
+\vspace{0.1cm}
 \begin{minipage}{0.95\linewidth}
     \textbf{Keywords}: 
-    SAXS, structural modeling, Python 
+    SAXS, structural modeling, models alignment 
 \end{minipage}
 \end{minipage}
 }
