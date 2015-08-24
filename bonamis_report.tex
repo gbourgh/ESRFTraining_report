@@ -263,16 +263,15 @@ it for test purposes (figure~\ref{fgr:saxscurve}).
     % Deuxieme chapitre  
     %--------------------
 
-As mentioned previously, FreeSAS is a Python package for BioSAXS data-
-analysis. 
-It is built of several modules, each focusing on a special task. 
-We will describe in this chapter, for each module of FreeSAS:
+FreeSAS is a Python package for BioSAXS data analysis. 
+It is comprised of several modules, each focusing on a special task. 
+We will describe, for each module of FreeSAS:
 \begin{itemize}
- \item the tasks needed to be executed
- \item the physical theory behind this task and its usefulness in our 
+ \item the tasks needed to be performed
+ \item the physical theory behind the task and its usefulness in our 
        global process
  \item the different Python tools and algorithms used in the module to 
-       execute this task
+       perform task
 \end{itemize}
 The last section will describe the way all these tasks are exploited 
 to create a "global process" computing the wanted result. 
@@ -281,66 +280,63 @@ to create a "global process" computing the wanted result.
 
 The library has to be able to work within the BM29 pipeline presented 
 in section \ref{bm29} and used in production for a few years  now. 
-As a component of a larger piece of software, it has to deal with inputs 
-coming from other software, especially the \textsc{atsas} programs used
-upstream and needs to provide outputs compatible with \textsc{atsas}, also used
-downstream.
+As a component of a larger piece of software, it has to deal with 
+inputs coming from other software, especially the \textsc{atsas} 
+programs used upstream and needs to provide outputs compatible with 
+\textsc{atsas}, used also downstream. 
 Here we will focus on the reading of the input structures and describe the
-ones we are interested in.
+data we are interested in.
 
-The inputs of the superimposition module is the
-outputs DAM of the various \textit{dammif} runs. 
-These structures are written in files using the PDB format (for 
-Protein Data Bank) \cite{pdb}, a standard representation of 
-macromolecular structure data.\\
-The (simplistic) parser written copes for two things: reading the atoms'
-coordinates (beads) and retriving the quality of the fit of the model on the
-experimental data ($\chi^2$ and $R$-value).
-Those numbers represent the quality of the model, calculated using the 
-difference between the actual SAXS curve and the simulated one from the
-corresponding model. 
-Those goodness of fit values are only used to reject model badly fitting
+The inputs of the superimposition module are the DAM outputs of the 
+various \textit{dammif} runs. 
+These structures are written in files using the PDB format (Protein 
+Data Bank) \cite{pdb}, a standard representation of macromolecular 
+structure data.\\
+The (simplistic) parser we have written copes with two things: reading 
+the atoms' coordinates (beads) and retrieving the quality of the fit 
+of the model on the experimental data ($\chi^2$ and $R$-value). 
+These numbers represent the quality of the model and are calculated 
+using the difference between the actual SAXS curve and the simulated 
+one. 
+These quality factors are used used to reject models badly reproducing 
 experimental data.
 
-The second piece of information to retrieve is the dummy-atoms coordinates. 
-As already mentioned, only low-resolution information are available in SAXS data 
-hence the structure of model is made of dummy-atoms.
-They are not actual atoms, but indicate there is 
-some material (the macromolecule) at their positions, and where there is
-no dummy-atoms, it is solvent. 
-Typical DAM used in this project had 500 dummy-atoms (order of magnitude).
-The parser written was dedicated to these task: to read the pdb file 
-to select the data we needed, and then to keep in memory in one hand 
-the $R-value$ of the DAM and in an other hand the Cartesian coordinates (x, y, 
-z, in Angstrom) of each dummy-atoms of the model. 
-These coordinates are stored as a 2-d numpy array from the 
-\textit{NumPy} package for scientific Python \cite{numpy}; they are 
-necessary for geometric handling we will have to do along our process.
+The second piece of information to retrieve are the dummy atoms 
+coordinates. 
+These are not actual atoms, but they indicate that there is some 
+material (the macromolecule) in their positions, and where there are 
+no dummy atoms, it is solvent. 
+Typical DAM used in this project had 500 dummy atoms (order of 
+magnitude). 
+The parser written was dedicated to the following task: read the PDB 
+file to select the data needed, and then keep in memory on the one 
+hand the $R-value$ of the DAM and on the other hand the Cartesian 
+coordinates (x, y, z, in Angstrom) of each dummy atom of the model. 
+These coordinates are stored as a 2-D numpy array from the 
+\textit{NumPy} package \cite{numpy}; they are necessary for the 
+geometric operation we will have to make along our process.
 
 \section{Similarity calculations}
 
-To be able to merge similar models, and reject dis-similar ones,
-one needs to define the similarity of two models. 
+In order to be able to merge similar models, and reject dissimilar 
+ones, one needs to define the similarity of two models. 
 This section introduces a ``distance'' to measure this  
 similarity and describes its implemention in the FreeSAS
 package.
 
-The likeness of two 3-d models can be, at first glance, very 
+The likeness of two 3-D models can be, at a first glance, very 
 subjective. 
-To be able to compute it, we use a metric called Normalized Spatial 
-Discrepancy (NSD), introduced by Kozin and Svergun in their paper 
-\textit{Automated matching of high- and low-resolution structural 
-models} \cite{supcomb}. 
+To be able to compute it, we use the NSD metric, introduced by Kozin 
+and Svergun in their paper \textit{Automated matching of high- and 
+low-resolution structural models} \cite{supcomb}. 
 This value quantifies the dissimilarity between two sets of 
-point $S_{1}$ and $S_{2}$, in our case in a three-dimensionnal space.
-Those sets are neither ordered nor of same size ($N_{1}$ points for
-$S_{1}$ and $N_{2}$ points for
-$S_{2}$), making useless other techniques like Kabsch method
-\cite{kabsch1976}.
-The NSD has been built has an analogue to the standard Euclidian distance,
-but as it is normalized, it is not homogeneous to a distance:
-
-The NSD is introduced with the following formula:
+point $S_{1}$ and $S_{2}$, in our case in a 3-D space.
+These sets are neither ordered nor of the same size ($N_{1}$ points 
+for $S_{1}$ and $N_{2}$ points for $S_{2}$), making unusable in our 
+case other techniques like Kabsch method \cite{kabsch1976}.
+NSD is analogous to the standard Euclidian distance, but as it is 
+normalized, it is not homogeneous to a distance. 
+The following formula defines the NSD:
 
 \[
 \rho(S_{1},S_{2})= \frac{1}{2} \sqrt {\frac{1}{N_{1}d_{2}^2} 
@@ -350,9 +346,9 @@ The NSD is introduced with the following formula:
 For a point $s_{1i}$ in $S_{1}$, the Euclidian distance with all the 
 points of $S_{2}$ is computed, and the minimal one is denoted as 
 $\rho(s_{1i}, S_{2})$. 
-The last parameters present in the formula is the fineness $d_{i}$. 
-It correspond to the average Euclidian distance between a point of 
-$S_{i}$ and its nearest neighbour.
+The other parameters in the formula are the finenesses $d_{i}$. 
+The fineness corresponds to the average Euclidian distance between a 
+point of $S_{i}$ and its nearest neighbour.
 
 The NSD can be used to measure the similarity of two sets of points as:
 \begin{itemize}
@@ -361,75 +357,78 @@ The NSD can be used to measure the similarity of two sets of points as:
  \item $\rho(S_{1},S_{2}) = 0$ only if $S_{1} = S_{2}$
 \end{itemize}
 
-As the calculation of the NSD is the core of our process, it is of prime  
-importance to optimize its implementation. This has been optimized in 3
-subsequent steps (and supervised by careful profiling):
+As the calculation of the NSD is the core of our process, it is of 
+primary importance to optimize its implementation. This has been 
+optimized in 3 subsequent steps (and supervised by careful profiling):
 \begin{enumerate}
-  \item numpy implementation calculating the 2d table of distances from all
-  atoms in $S_{1}$ to any atoms in $S_{2}$, performing subsequently the minimum
-  search in each row and column.
+  \item Numpy implementation calculating the 2-D table of distances from all
+  atoms in $S_{1}$ to any atom in $S_{2}$, performing subsequently the search 
+  of the minimum in each row and column.
   \item Cython implementation \cite{cython} (a kind of Python code translated
-  to C) which performs simulatneously the two minimum search (along row and
-  column) for each pair of atoms, preventing a large 2d array allocation.
+  to C) which performs simulatneously the searches for a minimum (along row 
+  and column) for each pair of atoms, preventing a large 2-D array allocation.
   \item An OpenMP \cite{openmp} implementation of the Cython version taking
-  benefit of the multi-core systems available on modern computers.
+  benefit from the multi-core systems available on modern computers.
 \end{enumerate}
 
 \section{Coarse superimposition of models}
 
 The DAM, as generated by \textit{dammif}, are randomly oriented, so the NSD
 between two models is not representative of their similarity.
-That is why we have to first superimpose the models, using translation, rotation
-and symmetries, so that the NSD only point out the dissimilarity.\\
+That is why we have to first superimpose the models, using 
+translation, rotation and symmetry operations, so that the NSD only 
+points out the dissimilarity.\\
 
 The strategy implemented to superimpose two DAM (sets of
-dummy-atoms $S_{1}$ and $S_{2}$) is similar to the one described in 
-Kozin and Svergun's publication \cite{supcomb} and goes via a three-
-steps process to bring them in their cannonical position:
+dummy atoms $S_{1}$ and $S_{2}$) is similar to the one described in 
+Kozin and Svergun's publication \cite{supcomb} and goes via a three 
+steps process to bring them into their canonical position:
 \begin{itemize}
   \item the center of mass of the model is at the origin of the 
-        coordinates axis (canonical translation)
-  \item the principle axis of inertia of the model are aligned with 
-        the coordinates axis (canonical rotation)
+        coordinate axes (canonical translation)
+  \item the principle axes of inertia of the model are aligned along 
+        the coordinate axes (canonical rotation)
 \end{itemize}
-The last step consists in applying a special symmetry to $S_{2}$ to 
-select the enantiomorph of $S_{2}$ corresponding on the one of $S_{1}$ 
-(enantiomorph selection).
+The last step consists in applying a special symmetry operator to 
+$S_{2}$ to select the enantiomorph of $S_{2}$ corresponding to the one 
+of $S_{1}$ (enantiomorph selection).
 
-We will illustrate this process giving the NSD between two models 
+We will illustrate this process showing the NSD between two models 
 after each step. 
-For it, we will use two models generated by \textit{dammif} from the 
-scattering curve of the lysozyme. 
+To this effect, we will use two models generated by \textit{dammif} 
+from the lysozyme scattering curve. 
 The initial NSD between the two models is $1.01$.
 
 \subsection{Canonical translation}
 
-The first stage consists in superimposing both models center of mass 
-(COM). 
-In the dummy-atoms modelization, all the dummy-atoms has the same mass 
-so the COM coordinates of the model $k$ are computed as follow:
+The first stage consists in superimposing the center of mass (COM) of 
+the two models. 
+In the dummy atom model, all the dummy atoms have the same mass so the 
+COM coordinates of the model $k$ are computed as follow:
 \[
 x_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} x_{ik};\ \ \ 
 y_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} y_{ik};\ \ \ 
 z_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} z_{ik}
 \]\\
-From it, the translation to send the model $S_{k}$ to the coordinates' 
-origin is calculated as $T_{k}^0 = (-x_{k}^0,\ -y_{k}^0,\ -z_{k}^0)$. 
-Thus, the canonical translation of $S_{k}$ is $T_{k}^0$.
+The canonical translation to send the model $S_{k}$ to the coordinates' 
+origin is calculated with $(-x_{k}^0,\ -y_{k}^0,\ -z_{k}^0)$ vector to 
+obtain the $4 \time 4$ canonical translation matrix of $S_{k}$: 
+$T_{k}^0$.
 
-With both models translated to its center of mass, the NSD between the 
-two DAM of lysozyme is $1.00$. 
-The improvement is really low because COM of each models are already 
-close initially.
+With both models translated to their center of mass, the NSD between 
+the two lysozyme DAM is $1.00$. 
+The improvement is really modest because the initial COM of each model 
+are already close to one another.
 
 \subsection{Canonical rotation}
 
-Next come the alignment stage. 
+The next step is the alignment stage. 
 To compute the canonical rotation matrix of $S_{k}$, which will align 
-principle axis of inertia of $S_{k}$ with the coordinates' axis, we 
-first need to know its inertia matrix. 
-It has to be compute with the COM of $S_{k}$ at the coordinates origin. 
-It is given by:
+the principle axes of inertia of $S_{k}$ with the coordinates' axes, 
+we first need to know its inertia tensor. 
+This has to be computed using the COM of $S_{k}$ at the coordinates 
+origin. 
+The inertia tensor is given by:
 \[
 I_{k}=
 \begin{pmatrix}
@@ -447,41 +446,43 @@ s_{kq}=
  x_{kq}^3 \\
 \end{pmatrix}
 $\\
-we have
+we have, with $\delta_{ij}$ the Kronecker delta,
 \[
-I_{ij} = \frac{1}{N_{k}} \cdot \sum\limits_{q=1}^{N_{k}} 
+(I_{k})_{ij} = \frac{1}{N_{k}} \cdot \sum\limits_{q=1}^{N_{k}} 
 [\delta_{ij} \cdot \sum\limits_{l=1}^3 
  (x_{kq}^l - {x_{kq}^l}^0)^2 -  (x_{kq}^i - {x_{kq}^i}^0) 
  \cdot (x_{kq}^j - {x_{kq}^j}^0)]
 \]\\
-It appears that $I_{k}$ tensor is symmetric real so we know that it 
-can be diagonalized; we can compute its three eigenvalues 
+It appears that the $I_{k}$ tensor is symmetric real, hence we know 
+that it can be diagonalized; we can compute its three eigenvalues 
 $\lambda_{k1} \geq \lambda_{k2} \geq \lambda_{k3}$ and the three 
 eigenvectors corresponding $v_{k1},\ v_{k2},\ v_{k3}$. 
-We can create a rotation matrix compound by the columns from 
-eigenvectors of $I_{k}$, sorted with rising order of associated 
-eigenvalues. 
-If this matrix is wrote $M_{k}$, is transposed $[M_{k}]^T$ is the 
-rotation matrix which align $S_{k}$ axis of inertia with the 
-coordinates axis \cite{supcomb}, the one we are looking for.
+We can create a rotation matrix composed by the eigenvectors of 
+$I_{k}$, arranged in columns and sorted in increasing order of the 
+associated eigenvalues. 
+If this matrix is named $M_{k}$, its transposed $[M_{k}]^T$ is the 
+rotation matrix which align $S_{k}$ axes of inertia along the 
+coordinates axes \cite{supcomb}, i.e. the one we are looking for 
+($4 \time 4$ rotation matrix).
 
-Adding the canonical rotations for each models to the process, we 
-obtain a NSD between the two studied DAM of $0.60$ (before it, 
+Including the canonical rotations for each models to the process, we 
+obtain a NSD value between the two DAM of $0.60$ (before it was 
 $NSD = 1.00$).
 
 \subsection{Enantiomorph selection}
 
-Before to be able to superimpose correctly $S_{2}$ on $S_{1}$, we need 
+Before being able to superimpose correctly $S_{2}$ on $S_{1}$, we need 
 to take into account enantiomorphs. 
 In fact, two enantiomorphs of a macromolecule generate the same SAXS 
-curve, so that this method do not allows to segregate them. 
-Thus, we do not make a difference for our data-analysis between two 
-enantiomorphs; and it needs to be implemented. 
+curve, so that this method does not allow to distinguish them. 
+This means that we do not make a difference for our data analysis 
+between two enantiomorphs.
+But this operation needs to be implemented. 
 As we superimpose $S_{2}$ on $S_{1}$, we will force $S_{2}$ to be in 
-the same enantiomorphic form that $S_{1}$. 
-For it, we have to set $S_{1}$ and $S_{2}$ in their canonical 
-position, so apply to them the transformation 
-$[M_{k}]^T \times T_{k}^0$ corresponding.
+the same enantiomorphic form as $S_{1}$. 
+For this purpose, we have to set $S_{1}$ and $S_{2}$ in their canonical 
+positions, i.e. apply to them the transformation 
+$[M_{k}]^T \times T_{k}^0$ ($\times$ is here the matricial product).
 
 Eight transformations are then performed on $S_{2}$ which correspond 
 to the eight possible symmetries, four for each enantiomorph. 
@@ -494,92 +495,88 @@ Transformation matrices are as follow:
  0 & 0 & 0 & 1
 \end{pmatrix}
 \]\\
-And after each transformation, the NSD between $S_{1}$ and $S_{2}$ is 
+After each transformation, the NSD between $S_{1}$ and $S_{2}$ is 
 computed. 
 The one minimizing the NSD is kept as the good symmetry for the 
-following steps. 
-The rotation matrix for $S_{2}$ is now the previous one $[M_{2}]^T$ 
-multiplied by the symmetry matrix, we will write it $R_{2}$.\\
+subsequent steps. 
+The rotation matrix for $S_{2}$ is now the product of the previous 
+one, $[M_{2}]^T$, by the symmetry matrix, and we will call it 
+$R_{2}$.\\
 
-Finally, we are able to compute, for a set of dummy-atoms $S_{k}$, the 
+Finally, we are able to compute for a set of dummy atoms $S_{k}$ the 
 canonical translation and rotation matrices. 
-We now also the the transformation to apply to force a DAM to be in 
-the same enantiomorphic form that an other one. 
+We know also the transformation to apply to force a DAM to be in the 
+same enantiomorphic form as the other one. 
 To canonically superimpose two DAM we can apply on them the required 
-transformation, but we chose to always align the second DAM on the 
-first one initial position (to save execution time).\\
+transformation but we chose to align always the second DAM on the 
+initial position of the first one (to save execution time).\\
 Thus, we apply the following transformation to $S_{2}$:
 \[(T_{1}^0)^{-1} \times M_{1} \times R_{2} \times T_{2}^0\]
 
 At the end of this process, we have two DAM whose centers of mass and 
-principles axis of inertia are superimposed; we will say canonically 
-superimposed. 
+principle axes of inertia are superimposed (canonical superimposition). 
 In our example, we obtain after this process a NSD equal to $0.58$.
 
-So with this coarse superimposition process, in our example, we have 
-superimposed two DAM from a $NSD_{init} = 1.01$ to $NSD_{final} = 
-0.58$. 
+After this coarse superimposition process, the NSD between the two DAM 
+decreased from a $NSD_{init} = 1.01$ to $NSD_{final} = 0.58$. 
 
 \section{Refined superimposition}
 
-The canonical superimposition presented before produce a good fit of 
-the two models (if they are similar), but it remains a coarse 
-alignment we need to optimize for a better understanding of the 
-dissimilarity between two DAM. 
+The canonical superimposition produces a good fit of the two models 
+(if they are similar), but the alignment remains coarse, we need to 
+optimize the superimposition to better characterize the dissimilarity 
+between two DAM. 
 The core of the superimposition process remains the same, we will add 
-on it the following refinement algorithm.\\
+to it the following refinement algorithm.\\
  
 We have to optimize the transformation applied to $S_{2}$ to align it 
 with $S_{1}$, and the criterion of improvement will be the NSD, which 
 has to be as low as possible. 
-For it, we use the simplex optimizer provided by the \textit{SciPy} 
-library \cite{scipy}. 
-But to use it, accurate numerical parameters are needed. 
-What we did is to extract from the global transformation matrix 
-presented before six transformation parameters: 
+To this effect, we use the simplex optimizer provided by the 
+\textit{SciPy} library \cite{scipy}, but to use it, accurate numerical 
+parameters are needed. 
+What we did was to extract from the global transformation matrix 
+six transformation parameters: 
 $(x_{0}, y_{0}, z_{0})$, 
 corresponding to the total translation applied to $S_{2}$, and 
-$(\alpha, \beta, \gamma)$, 
-which are the Euler angles extracted from the total rotation. 
-The optimizer receives this six parameters and call a function which 
+$(\alpha,\ \beta,\ \gamma)$, 
+which are the Euler angles of the total rotation. 
+The optimizer reads in these six parameters and calls a function which 
 returns the NSD between $S_{1}$ and $S_{2}$ after the input 
 transformation has been applied to $S_{2}$. 
-This call is repeat again and again, refining each time the six 
-parameters values to minimize the NSD returned.
+This call is repeated, refining each time the six parameters values to 
+minimize the NSD.
 
-When these iterations reach a landing, the optimizer is stopped and 
-returns the six refined parameters and the minimized NSD. 
-Here, the superimposition of the two models is optimized, the final 
-NSD value is assumed to reflect the actual dissimilarity between them.\\
+The optimizer is stopped when convergence has been reached and returns 
+the six refined parameters and the minimized NSD. 
+The final NSD value is assumed to reflect the actual dissimilarity 
+between them.\\
 
-If we add to the coarse superimposition this refinment process in our 
-example of two DAM of lysozyme, we obtain $NSD_{refined} = 0.51$. 
-We can conclude that the refinment provides a good improvment of the 
-superimposition ($0.58$ to $0.51$), even if the coarse superimposition 
-was already a good approximation ($1.01$ to $0.58$).
+If we add to the coarse superposition this refinement process we 
+obtain $NSD_{refined} = 0.51$ in the example of the two lysozyme DAM. 
+We can conclude that the refinment provides a significant improvement 
+of the superimposition (from $0.58$ to $0.51$), however the coarse 
+superimposition has already yielded a good approximation (from $1.01$ 
+to $0.58$).
 
-\section{Dummy atoms model selection}
+\section{Dummy atom models selection}
 
-The algorithm to superimpose two DAM has been fully described, it has 
-to be implemented in order to superimpose the $N$ models outgoing of 
-\textit{dammif}. \\
+The algorithm superimposing two DAM was implemented in order to 
+superpose the $N$ models generated by \textit{dammif}.\\
 
-For it, dammif pdb files are first read with the FreeSAS parser and 
-usefull data are extracted as presented before. 
-Some properties we introduced are then computed from it. 
-At this stage we dispose of $N$ detailled DAM and all we need to 
-superimpose them.
+For it, \textit{dammif} PDB files are first read in through the 
+FreeSAS parser and relevant data are extracted. 
+Some properties are then computed from it (COM, inertia tensor,...). 
+At this stage we have $N$ detailed DAM and all we need is to 
+superpose them.
 
-The superimposition is implemented to obtain a NSD table $N*N$ sized. 
-Each model is represented by one row and one column. 
-Each bow in the table will contain the optimized NSD between the "row" 
-model and the "column" model. 
-To resume, we want a $N*N$ table with 
+The superposition is implemented to obtain a $N \times N$ NSD table. 
+We want a $N \times N$ table with 
 \[
 table_{ij}=NSD(S_{i},S_{j})
 \]\\ 
-We know that all we will have zeros on the diagonal and the table will 
-be symmetric because of two properties of the NSD:
+We know that we have zeros on the diagonal and that the table is 
+symmetric because of the two properties of the NSD:
 \[
 NSD(S_{i},S_{i})=0.00 \Rightarrow table_{ii}=0.00
 \]
