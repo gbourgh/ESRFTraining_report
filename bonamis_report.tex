@@ -776,7 +776,7 @@ comparatively to \textit{supcomb}.
 Some tests has been performed to compare execution times with several 
 option of both programs (always with the same SAXS curve of the 
 Lysozyme protein). 
-Results are presented in the appendix.%TODO ajouter reference et commentaires
+Results are presented in the appendix~\ref{perfappendix}.%TODO ajouter reference et commentaires
 
 Can be added to these advantages the fact, already mentionned, that a 
 Python implementation provides a better integration into EDNA 
@@ -832,8 +832,46 @@ problematic tools of \textsc{atsas}, as \textit{dammin}.
 
 \chapter{First appendix}
 
-\chapter{Second appendix}
+\chapter{Performances comparison}
+\label{perfappendix}
 
+Some tests have been performed to compare in the same situations the 
+different execution times of both \textsc{atsas}' supcomb and FreeSAS' 
+SuPyComb. 
+These execution times have been computed with... %TODO references pour Scisoft12 
+
+Data used as inputs are pdb files from dammif, computed from the 
+scattering curve of lysozyme, and with its two modes: fast and slow. 
+With the first one, we have obtained 16 models of nearly 515 dummy 
+atoms each; and with the second one, 16 models of nearly 3050 dummy 
+atoms. 
+Supcomb and SuPyComb are tested with four combinations of two options: 
+\begin{itemize}
+\item fast mode - enantiomorphs not allowed
+\item fast mode - enantiomorphs allowed
+\item slow mode - enantiomorphs not allowed
+\item slow mode - enantiomorphs allowed
+\end{itemize}
+
+Results from dammif models in fast mode are presented in 
+figure~\ref{fgr:perfdamfast} and those from dammif models in slow mode 
+in figure~\ref{fgr:perfdamslow}. 
+It clearly appears that SuPyComb presents advantages in terms of 
+execution time, even if it is doing other thing that supcomb 
+($R-value$ selection, figures plotting).
+
+\begin{figure}
+\includegraphics[scale=0.8]{perfdamfast.png}
+\caption{Execution time of supcomb and SuPyComb with several option 
+  for dammif fast mode (515 dummy atoms)}
+\label{fgr:perfdamfast}
+\end{figure} \vfill
+\begin{figure}
+\includegraphics[scale=0.8]{perfdamslow.png}
+\caption{Execution time of supcomb and SuPyComb with several option 
+  for dammif slow mode (3050 dummy atoms)}
+\label{fgr:perfdamslow}
+\end{figure}
 
 \end{document}
 
