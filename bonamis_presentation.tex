@@ -148,7 +148,7 @@ Sortie de l'anneau :\\
 BM 29 $\rightarrow$ ligne de lumi\`ere d\'edi\'ee \`a la BioSAXS\\
 \begin{itemize}
   \item SAXS sur macromol\'ecules en solution
-  \item acquisition figure de diffusion (2-d, symm\'etrique)
+  \item acquisition figure de diffusion (2-d, sym\'etrique)
   \item int\'egration azimutale $\rightarrow$ \textbf{courbe de diffusion}
 \end{itemize}
 
@@ -170,7 +170,7 @@ Programmes lanc\'es en s\'erie :
 \begin{enumerate}
   \item \textit{dammif} $\Rightarrow$ cr\'eation de $N$ mod\`eles 3-d 
     (Monte-carlo)
-  \item \textit{supcomb} $\Rightarrow$ superposition des mod\'eles, \'ecarte 
+  \item \textit{supcomb} $\Rightarrow$ superposition des mod\`eles, \'ecarte 
     les "mauvais"
   \item \textit{damaver} $\Rightarrow$ moyenne des mod\`eles valides
   \item \textit{dammin} $\Rightarrow$ mod\`ele final, compatible avec la 
@@ -222,7 +222,7 @@ $\longrightarrow$ $R_{max} = R_{moy} + 2 \times std(R)$
 \end{frame}
 
 \begin{frame}{Superposition des mod\`eles}
-\textbf{objectif} $\longrightarrow$ regrouper les mod\'eles quasi-identiques
+\textbf{objectif} $\longrightarrow$ regrouper les mod\`eles quasi-identiques
 
 \vspace{0.2cm}
 \begin{minipage}{0.70\linewidth}
@@ -284,21 +284,68 @@ Finalement $\longrightarrow$ $N-n$ mod\`eles valides dont une r\'ef\'erence
 
 \end{frame}
 
-\section{Lysozyme study}
+\section{Application sur la Lysozyme}
 %-------------------------------------------
 %----------------Third part-----------------
 %-------------------------------------------
 
-\begin{frame}{diapo 1}
-\lipsum[1]
+\begin{frame}{Mo\'elisation structurale de la lysozyme}
+
+\begin{minipage}{0.40\linewidth}
+    \begin{flushleft}
+    \includegraphics[scale=0.2]{saxscurve.png}
+    \end{flushleft}
+\end{minipage} \hfill
+\begin{minipage}{0.55\linewidth}
+  Courbe SAXS de la lysozyme\\ 
+  $\xrightarrow[]{16 \times dammif}$ 16 DAM\\
+  (3050 pseudo atomes chacun)
+\end{minipage}
+
+
+
+\begin{minipage}{0.40\linewidth}
+    \begin{flushleft}
+    \includegraphics[scale=0.2]{unalignedmodels.png}
+    \end{flushleft}
+\end{minipage} \hfill
+\begin{minipage}{0.55\linewidth}
+lecture des 16 fichiers PDB:
+\begin{itemize}
+  \item lecture des coordonn\'ees des pseudo atomes
+  \item lecture des 16 $R-factor$ 
+  \item calcule de $R_{max}$ $\rightarrow$ 1 mod\`ele \'ecart\'e
+\end{itemize}
+\end{minipage}
 \end{frame}
 
-\begin{frame}{diapo 2}
-\lipsum[1]
+\begin{frame}{Superposition et s\'election}
+\includegraphics[scale=0.30]{nsd.png}
 \end{frame}
 
-\begin{frame}{diapo 3}
-\lipsum[1]
+\begin{frame}{R\'esultats}
+
+14 mod\`eles valides, "model-12" = r\'ef\'erence\\
+$\Rightarrow$ alignement des 13 autres DAM sur la r\'ef\'erence
+
+\begin{minipage}{\linewidth}
+    \includegraphics[scale=0.45]{alignedmodels.png}
+\end{minipage}
+\end{frame}
+
+\section*{Conclusion}
+%-------------------------------------------
+%----------------Conclusion-----------------
+%-------------------------------------------
+
+\begin{frame}{Conclusion}
+D\'eveloppement de FreeSAS : 
+\begin{itemize}
+\item libre et open-source
+\item r\'esultats conformes aux attentes
+\item traitement rapide des donn\'ees (Cython, OpenMP)
+\item remplace efficacement \textit{supcomb} sur BM29
+\end{itemize}
 \end{frame}
 
 \end{document}
