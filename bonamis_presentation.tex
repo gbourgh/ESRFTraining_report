@@ -231,7 +231,7 @@ Alignement grossier de deux mod\`eles:\\
 \begin{itemize}
 \item 1 translation (centres de masse)
 \item 1 rotation (axes principaux d'inertie)
-\item s\'election d'un \'enantiom\`ere (8 symm\'etries)
+\item s\'election d'un \'enantiom\`ere (8 sym\'etries)
 \end{itemize}
 
 \includegraphics[scale=0.30]{coarsealign.png}
@@ -244,11 +244,44 @@ Alignement grossier de deux mod\`eles:\\
 \end{frame}
 
 \begin{frame}{NSD et optimisation}
-\lipsum[1]
+Mesure de la diff\'erence entre 2 DAM $\longrightarrow$ \textbf{NSD}\\
+(Normalized Spatial Discrepancy, Kozin and Svergun, 2001)
+\begin{itemize}
+\item sym\'etrique $NSD(S_{1},S_{2}) = NSD(S_{2},S_{1})$
+\item $NSD(S_{1},S_{2}) = 0$ ssi $S_{1} = S_{2}$
+\item $NSD(S_{1},S_{2}) > 1.0$ $\Rightarrow$ 2 DAM totalement diff\'erents
+\end{itemize}
+
+\vspace{0.2cm}
+
+Optimisation de la superposition $\longrightarrow$ optimiseur \textit{Scipy}
+\begin{itemize}
+\item alignement grossier = initialisation de l'optimiseur
+\item 6 param\`etres libres (3 de translation, 3 angles d'Euler)
+\item multiples it\'erations jusqu'\`a la convergence de la NSD
+\item retourne 6 param\`etres optimis\'es + NSD minimis\'ee
+\end{itemize}
+
 \end{frame}
 
 \begin{frame}{S\'election des mod\`eles}
-\lipsum[1]
+Initialement $\longrightarrow$ $N$ DAM (\textit{dammif})\\
+$R-factor$ $\longrightarrow$ $N-m$ DAM valides\\
+
+\vspace{0.3cm}
+
+Rejet des mod\`eles diff\'erents des autres (NSD):
+\begin{itemize}
+\item tableau $N \times N$ des NSD ($N^{2}$ pairs de DAM)
+\item pour chaque DAM $\rightarrow$ moyenne des NSD avec tous les autres
+\item rejet des mod\`eles d\'epassant $NSD_{max}$
+\item plus basse $NSD_{moy}$ $\rightarrow$ DAM "r\'ef\'erence"
+\end{itemize}
+
+\vspace{0.3cm}
+
+Finalement $\longrightarrow$ $N-n$ mod\`eles valides dont une r\'ef\'erence
+
 \end{frame}
 
 \section{Lysozyme study}
