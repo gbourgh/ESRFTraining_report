@@ -118,7 +118,7 @@ The global data-analysis process can be divided in four steps:
  \item azimuthal integration of the image
  \item background correction (scattering from the sample buffer)
  \item basic analysis of the scattering curves
- \item ab initio modelling
+ \item ab initio modeling
 \end{itemize}
 
 \begin{figure}
@@ -152,15 +152,15 @@ plots for visual analysis of the scattering signal.\\
 The fourth step of the data analysis is the ab initio modeling, 
 presented in the following section, which is the core of the subject.
 
-\section{Ab initio modelling}
-\label{modelling}                           %flag pour citer cette section
+\section{Ab initio modeling}
+\label{modeling}                           %flag pour citer cette section
 
-Ab initio modelling aims at building a low-resolution 3-D model of the 
+Ab initio modeling aims at building a low-resolution 3-D model of the 
 macromolecule of interest. 
 BM29 staff uses for this other tools from the \textsc{atsas} package 
 as follows.\\
 
-The first step of the modelling consist in reconstructing many ($N$, ususally 8
+The first step of the modeling consist in reconstructing many ($N$, ususally 8
 or 16) 3-D dummy-atom models (DAM) from the background corrected curve using 
 \textit{dammif} \cite{dammif}. 
 These DAM are then selected according to two parameters related to the 
@@ -202,8 +202,8 @@ comparison with other techniques).
 \section{Traineeship subject}
 
 The task of the traineeship was to work on the part "superimposition 
-and selection of the models" of the modelling process. 
-In fact, the modelling process is the most problematic according to 
+and selection of the models" of the modeling process. 
+In fact, the modeling process is the most problematic according to 
 the beamline scientists for several reasons:
 \begin{enumerate}
 \item the BM29 pipeline is based on Python, whereas most
@@ -583,57 +583,51 @@ NSD(S_{i},S_{i})=0.00 \Rightarrow table_{ii}=0.00
 \[
 NSD(S_{i},S_{j}) = NSD(S_{j},S_{i}) \Rightarrow table_{ij}=table_{ji}
 \]\\
-Thus we can compute $\frac{N \cdot (N-1)}{2}$ optimized 
-superimpositions instead of $N*N$.\\
+As a consequence, we can compute $\frac{N \cdot (N-1)}{2}$ optimized 
+superpositions instead of $N \times N$.\\
 
-Once the NSD table generated, we dispose of all we need to select the 
-dummy-atoms models.\\
-The first criteria of selection have already been presented in 
-\ref{modelling} section: the $\chi^2$ and the $R-value$. 
-These two parameters are not dependent of the DAM position, they are 
-computed before any movements. 
-So for a gain of execution time, the test on them are computed before 
-the superimposition process. 
-Thus some models (say $x$) are discarded before to be superimposition, 
-which allow us to skip the optimized alignment calculation to save 
-time: $\frac{(N-x) \cdot (N-x-1)}{2}$ instead of 
-$\frac{N \cdot (N-1)}{2}$.
+Once the NSD table is generated, we have all what we need to select 
+the dummy atom models.\\
+The first selection criteria have already been presented in 
+section~\ref{modeling}: the $\chi^2$ and the $R-value$. 
+These two parameters are not dependent on the DAM positions as they 
+are computed before any movements. 
+For gaining execution time, the tests on them are performed before 
+the superposition process, thus some models (say $m$) are discarded 
+before being superimposed, allowing skipping superposition 
+optimization steps to save time: $\frac{(N-m) \cdot (N-m-1)}{2}$ 
+instead of $\frac{N \cdot (N-1)}{2}$.
 
-The following criterion of selection has also been explained in 
-\ref{modelling} section, the average NSD between each models and 
-others. 
-This variable is computed using the NSD table obtained by the process 
-we know and the test is performed for each DAM remaining ($N-x$ at 
-this level). 
-A new series of models is discarded (or neither), that give us the 
-$N-n$ acceptable DAM to follow the modelling process of EDNA. 
-Moreover, the model with the lower average NSD to all other valid 
-models is set as "reference model".\\
+Next the average NSD between each model and the others is computed 
+(section\ref{modeling}) using the NSD table and the test is performed 
+for each remaining DAM ($N-m$ at this stage). 
+A new series of models is discarded (or not), that give us the 
+$N-n$ acceptable DAM to follow the modeling process of EDNA. 
+Moreover, the model with the lowest average NSD is set as "reference 
+model".\\
 
-At the end of it, data are formatted to present correctly the analysis 
-results. 
-First, what concern DAM is saved using PDB format to be accessible to 
+At the end of this procedure, data are formatted to present 
+consistently the analysis results. 
+First, the DAM is saved using the PDB format to be accessible to 
 the next program in the pipeline: \textit{damaver}. 
 The models are aligned on the reference one and are saved in this 
-position, as needed by \textit{damaver}. 
-Informations about the selection process are also saved to be 
-available for the BM29 users. 
+configuration, as needed by \textit{damaver}. 
+Information about the selection process is also saved for the BM29 
+users. 
 A piece of code has been written to create figures with $\chi^2$ and 
-$R-value$ values and thresholds, the NSD table and the average NSD 
-values and threshold. 
-These figures are computed using the \textit{matplotlib} Python 
+$R-value$ and respective thresholds, the NSD table and the average NSD 
+values and related threshold. 
+These figures are generated using the \textit{matplotlib} Python 
 library \cite{matplotlib}.\\
 
-We saw in this chapter the way FreeSAS package has been implemented in 
-order to superimpose and select dummy-atoms models from 
-\textit{dammif}. 
-FreeSAS provides tools to read and compute data from PDB files and to 
-process them using several algorithms. 
-At the end, it returns the valid DAM, superimposed and ready to be 
-used by \textit{damaver}, and all data usefull for the users.
+It should be noted that FreeSAS provides tools to read data from PDB 
+files and to process them using several algorithms. 
+At the end, it returns the target DAM ready to be used by 
+\textit{damaver} along with all data which might help the users in 
+their analysis.
 
-We will now see an usage of FreeSAS package with data of a SAXS 
-experiment on the lysozyme protein.
+We will see in chapter 3 an example of usage of the FreeSAS package 
+with data from a SAXS experiment on lysozyme.
 
 
 \chapter{Lysozyme modeling with FreeSAS}%titre ???
@@ -642,53 +636,50 @@ experiment on the lysozyme protein.
     %---------------------
 
 In this chapter we will present some results obtained using FreeSAS 
-tools to study lysozyme protein.
+tools analyzing lysozyme.
 
-In a first section will be described the program used for this data 
-treatment. 
-Then, we will presents the results returned by this program. 
-This chapter will end with a presentation of our program's performance 
-in comparison with the corresponding ones in the \textsc{atsas} 
-package.
+Firstly the program used for this data treatment will be described. 
+Then, the results returned by this program will be presented. 
+In the end our program's performances will be compared with those of 
+the \textsc{atsas} package.
 
 \section{SuPyComb script}
 
-The tools from FreeSAS has been integrated into the pipeline of BM 29, 
-as mentioned in the submitted publication of the beamline 
-\cite{bm29news}, but are also available in a stand-alone program: 
+The tools from FreeSAS have been integrated into the pipeline of BM29 
+\cite{BM29news}, but are also available as a stand-alone program: 
 \textit{SuPyComb}.\\
 
-The program is a Python script taking pdb files from \textit{dammif} 
-as arguments. 
-It performed the selection with the $R-value$, the superimposition of 
-the $N$ dummy-atoms models, the selection with the NSD mean, the 
-selection of the reference model and superimpose all valid models on 
-the reference one.\\
-\textit{SuPyComb} has two different way to run depending on the number 
-of inputs models:
+The program source is written in Python and takes PDB files from 
+\textit{dammif} as arguments. 
+It carries out the selection according to the $R-value$, the 
+superposition of the $N$ dummy atom models, the selection based on the 
+NSD mean, the selection of the reference model and the alignment of 
+all valid models on the reference one.\\
+\textit{SuPyComb} can be run in two different ways, depending on the 
+number of input models:
 \begin{itemize}
-  \item if there is only two models, the second one is simply 
-        superimpose on the first one as presented in chapter 2.
-        \textit{SuPyComb} returns the final NSD value and a pdb file 
-        with coordinates of the second model aligned with the first one.
-  \item if there are more than two models, \textit{SuPyComb} performs 
-        selections and superimposition presented just before. 
-        It return the $N*N$ NSD table, a graph with the $R-values$ and 
-        the maximal value and an other one with, for each DAM, the NSD 
-        mean with all others and the maximal value. 
+  \item if there are only two models, the second one is simply 
+        superimposed on the first one as presented in chapter 2.
+        \textit{SuPyComb} returns the final NSD value and a PDB file 
+        with the coordinates of the second model aligned on the first one.
+  \item if there are more than two models, \textit{SuPyComb} carries out 
+        selections and superimposition as mentionned above. 
+        It returns the $N \times N$ NSD table, a graph with the $R-values$, 
+        the maximal accepted value and the average NSD with all the other 
+        models and its threshold for each DAM.
 \end{itemize}
 Moreover, some options are available for \textit{SuPyComb} users, and 
 especially these ones:
 \begin{itemize}
   \item Slow mode / fast mode:
   For the slow mode, the optimization of the NSD is done for each symmetry 
-  (ie. 8 times) whereas for the fast mode, the best symmetry is first 
+  (i.e. 8 times) whereas for the fast mode, the best symmetry is first 
   choosen without optimization and only the NSD for this symmetry is 
   optimized.
   The result is that the slow mode is nearly 8 times slower than the fast 
   one.
-  \item Enantiomorphs option:
-  This option can be used to authorize or not the program to look for 
+  \item Enantiomorph option:
+  This option can be used in order for the program to look up or not 
   enantiomorphs. 
   If not, the program will not test 8 symmetries but only 4. 
   Thus, it will not be able to recognize two enantiomorphs of the 
@@ -697,94 +688,93 @@ especially these ones:
 
 \section{Results of the lysozyme study}%TODO revoir le titre
 
-We took the scattering curve of lysozyme protein as argument for 
-\textit{dammif}, that we ran 16 times in slow mode. 
-Thus, we dispose of 16 pdb files containing data for 16 dummy-atoms 
-models of nearly 3000 dummy-atoms each.\\
+We took the scattering curve of lysozyme as an argument for 
+\textit{dammif}, that we ran 16 times in its slow mode. 
+Thus, we obtain 16 PDB files containing data for 16 dummy atom models 
+of nearly 3000 dummy atom each.\\
 
-We ran \textit{SuPyComb} with these 16 files as arguments and with 
-options mode fast and enantiomorphs allowed. 
-The first return is the graph presented in figure~\ref{fgr:rfactor}. 
+We ran \textit{SuPyComb} with these 16 files as arguments in fast mode 
+and with the enantiomorphs search option. 
+One output is the graph presented in figure~\ref{fgr:rfactor}. 
 \begin{figure}
 \centering
 \includegraphics[scale=0.6]{Rfactor.png}
-\caption{Graph containing the $R-value$ of each DAM, the maximal value 
+\caption{Graph showing the $R-value$ of each DAM, the threshold $R_{max}$ 
          and the discarded DAM}
 \label{fgr:rfactor}
 \end{figure}
-It points out the fact that the $R-value$ of one of the models (dammif-
-11) exceed the $R_{max}$, which is the mean of the $R-values$ plus two 
-times the standard deviation. 
-The DAM dammif-11 is automatically flagged as non-valid and discarded. 
-The model will not be take into account in the following of the 
-\textit{SuPyComb} process, that will save execution time.
+It points out the fact that the $R-value$ of one of the models 
+("dammif-11") exceeds $R_{max}$, which is the average of the 
+$R-values$ plus twice the standard deviation. 
+The DAM "dammif-11" is automatically flagged as non-valid and is 
+discarded. 
+The model will not taking into account in the subsequent 
+\textit{SuPyComb} process that will save execution time.
 
-After all the process we detailled in chapter 2, \textit{SuPyComb} 
+After the whole process detailed in chapter 2, \textit{SuPyComb} 
 returns the two graphs presented in figure~\ref{fgr:nsd}. 
 \begin{figure}
 \centering
 \includegraphics[scale=0.45]{nsd.png}
 \caption{Two graphs computed by \textit{SuPyComb}, the NSD table and 
-         the nsd mean with all other DAM for each model}
+         for each model the average NSD with all the others}
 \label{fgr:nsd}
 \end{figure}
-The $16*16$ NSD table details the distance between each pair of 
-models. 
-The color scale accentuate the biggest and the lowest NSD values, 
-which gives a clear idea of the similar models and the dis-similar 
-ones.\\
-The second graph ("NSD between any model and all others") give us 
-five informations:
+The $16 \times 16$ NSD table reports the distances between each pair 
+of models. 
+The color scale highlights the biggest and the lowest NSD values 
+giving a clear idea of how models are ranked as similar or, on the 
+contrary, dissimilar.\\
+The graph "NSD between any model and all others" gives five pieces of 
+information:
 \begin{itemize}
-\item as it is called, the NSD between any model and all others
-\item the $NSD_{max}$ computed as the mean plus the standard deviation
-\item the previously discarded models, and why they have been discarded
-\item the models discarded due to their dis-similarity
-\item the reference model, the one with the lowest value of NSD with 
+\item the NSD between any model and all the others
+\item the $NSD_{max}$ computed as the mean plus one standard deviation
+\item the discarded models, and why they have been discarded ($R-value$ 
+      or $\chi^{2}$)
+\item the models discarded due to their dissimilarity (NSD)
+\item the reference model, i.e. the one with the lowest average NSD with 
       all other models
 \end{itemize}
-Here, the model "model-03" (which is the model "dammif-03" after 
+The model "model-03" (which is the model "dammif-03" after 
 translations and rotations) is flagged as non-valid.
 
-Finally, remaining models (the ones flagged as valid) are superimpose 
+Finally, remaining models (those flagged as valid) are superimposed 
 on the reference model, here the DAM "model-12". 
-The final positions of the 16 dummy-atoms models are then saved in 16 
-pdb files, compatible with other \textsc{atsas} programs which may be 
-ran.
-%TODO mettre en annexes une representation des modeles valides avec Pymol
-%avec une reference dans cette section ???
+The final configuration of the 16 dummy atom models are then saved in 
+16 PDB files consistently with other \textsc{atsas} programs possibly 
+post-processing these files.
 
-\section{SuPyComb performances}%TODO titre definitif ?
+\section{SuPyComb performances}
 
-Several sides of \textit{SuPyComb} make it interesting to use it in 
-place of \textsc{atsas}'s \textit{supcomb}.
+Several features of \textit{SuPyComb} make its use appealing as a 
+replacement of \textsc{atsas}' \textit{supcomb}.
 
-First, \textit{SuPyComb} is able to take as arguments several DAM 
-whereas \textit{supcomb} only superimpose two models. 
-Thus, for the superimposition of 16 models, it has to read several 
-times each models (total of $16*16$ reading), whereas 
-\textit{SuPyComb} reads only one time each pdb file.
+First, \textit{SuPyComb} is able to take as arguments several DAM, 
+whereas \textit{supcomb} superimposes only two models. 
+For the superimposition of 16 models, \textit{supcomb} reads in 
+several times each model (total of $16 \times 16$ readings), whereas 
+\textit{SuPyComb} reads only once each PDB file.
 
-Moreover, \textit{supcomb} do not generates graphs we need 
-($R-values$, NSD table, NSD means), so it has to be done elsewhere. 
-The fact that \textit{SuPyComb} generates it automatically simplify 
-EDNA's run.
+Moreover, \textit{supcomb} does not generate the graphs needed 
+($R-values$, NSD table, NSD means). 
+The fact that \textit{SuPyComb} generates them automatically simplify 
+EDNA' runs.
 
 The execution time of \textit{SuPyComb} is also a great advantage 
-comparatively to \textit{supcomb}. 
-Some tests has been performed to compare execution times with several 
-option of both programs (always with the same SAXS curve of the 
-Lysozyme protein). 
-Results are presented in the appendix~\ref{perfappendix}.%TODO ajouter reference et commentaires
+compared to \textit{supcomb}. 
+Some tests have been performed to compare execution times with several 
+options of both programs (always with the same Lysozyme SAXS curve). 
+Results are presented in the appendix~\ref{perfappendix}.
 
-Can be added to these advantages the fact, already mentionned, that a 
-Python implementation provides a better integration into EDNA 
-pipeline.\\
+In addition to these advantages the Python implementation of SuPyComb 
+provides a better integration into the EDNA pipeline.\\
 
-We saw in this chapter that FreeSAS provides tools to analyse and 
-handle effectively data from \textit{dammif}. 
-\textit{SuPyComb} program from FreeSAS returns good results, that are 
-compatible with others \textsc{atsas} programs used into EDNA.
+We saw in this chapter that FreeSAS provides tools to handle and 
+analyze effectively data from \textit{dammif}. 
+The \textit{SuPyComb} program from the FreeSAS package returns 
+reliable results that are consistent with the EDNA pipeline which has 
+been originally based on the \textsc{atsas} programs.
 
 
 \chapter*{Conclusion and outlook}
@@ -793,24 +783,24 @@ compatible with others \textsc{atsas} programs used into EDNA.
     % Chapitre de conclusion + perspectives
     %----------------------------------------
 
-BioSAXS beamline BM29 aims at determine 3-dimensional structure of 
+The BioSAXS beamline BM29 aims at determining 3-D structures of 
 proteins from SAXS experiments. 
 A series of tasks, controlled by EDNA and using several programs of 
-the \textsc{atsas} package, provides a structural low-resolution model 
-of the studied protein.\\
+the \textsc{atsas} package, provides structural low-resolution models 
+of the studied proteins.\\
 
 The FreeSAS package has been implemented to replace some parts of 
-\textsc{atsas} that did not satisfy the beamline anymore. 
-With FreeSAS, BM29 has tools to read, superimpose and select models 
-from \textit{dammif} efficiently. 
-As it is written in Python and open source, it removes some 
-difficulties from \textit{supcomb} integration into EDNA. 
-Moreover, its speed of execution partially improves the one of EDNA 
-pipeline.\\
+\textsc{atsas} that did not fulfil the beamline requirements anymore. 
+With FreeSAS, BM29 has now tools to superimpose and select efficiently 
+models from \textit{dammif}. 
+As it is written in Python and is open source, FreeSAS removes some 
+difficulties found in the integration of \textit{supcomb} into EDNA. 
+Moreover, its execution speed improves the computing performance of 
+the EDNA pipeline.\\
 
-As FreeSAS has not been created only for this task, it remains to 
-develop the package to provides new tools able to replace other 
-problematic tools of \textsc{atsas}, as \textit{dammin}.
+As FreeSAS has not been created only for this task the package will be 
+further developed to provide new tools able to replace other 
+problematic \textsc{atsas}' modules as \textit{dammin}.
 
 
 \newpage                 %ne pas enlever (numerotation pour sommaire)
