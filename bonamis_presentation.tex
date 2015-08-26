@@ -12,7 +12,9 @@
 \def\theauthor {Guillaume Bonamis}				%Full authors, displayed on first slide
 \def\theshortauthor {Bonamis}					%Short authors, displayed on all slides footers
 \def\thedate {Vendredi 4 Septembre}
-\def\theinstitute {European Synchrotron Radiation Facility, Universit\'e Lille 1}%Full name of institute, displayed on first slide
+\def\theinstitute {European Synchrotron Radiation Facility, Universit\'e Lille 1\\
+  superviseur: J\'er\^ome Kieffer\\
+  tuteur: Emeline Dudognon }%Full name of institute, displayed on first slide
 \def\theshortinstitute {ESRF, Lille 1}			%Short name of institute, displayed on all slides footers
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,8 +166,8 @@ de la structure de la macromol\'ecule
 
 \begin{frame}{Mod\'elisation structurale}
 %----------------------------------------
-Traitement des donn\'ees exp\'erimentales : syst\`eme \textbf{EDNA}
-Programmes lanc\'es en s\'erie : 
+Traitement des donn\'ees exp\'erimentales: pipeline de programmes\\
+(programmes du paquet \textsc{atsas}, de l'EMBL d'Hambourg)
 %pipeline simplifiee pour presentation
 \begin{enumerate}
   \item \textit{dammif} $\Rightarrow$ cr\'eation de $N$ mod\`eles 3-d 
@@ -192,10 +194,40 @@ Programmes lanc\'es en s\'erie :
 
 \end{frame}
 
+\begin{frame}{\textit{Supcomb}}
+\textit{supcomb} = programme du paquet \textsc{atsas}
+\begin{itemize}
+  \item code source ferm\'e
+  \item probl\`emes d'int\'egration dans la pipeline de BM29
+  \item temps d'\'ex\'ecution \'elev\'e
+\end{itemize}
+
+\vspace{1cm}
+
+Objectif du stage : r\'e-impl\'ementation de \textit{supcomb}\\
+\begin{center} $\longrightarrow$ \textbf{FreeSAS} \end{center}
+
+\end{frame}
+
 \section{Impl\'ementation de FreeSAS}
 %-------------------------------------------
 %----------------Second part----------------
 %-------------------------------------------
+
+\begin{frame}{FreeSAS}
+
+\begin{itemize}
+\item biblioth\`eque \'ecrite en Python
+\item 2000 lignes de code
+\item documentation sur readthedocs.org
+\item code source sur github.com
+\item license MIT (libre)
+\end{itemize}
+
+Remplace aujourd'hui \textit{supcomb} sur BM29\\
+D\'evelopp\'e pour remplacer chaque brique logiciel d'\textsc{atsas}
+
+\end{frame}
 
 \begin{frame}{Lecture des donn\'ees}
 \begin{minipage}{0.45\linewidth}
