@@ -12,6 +12,23 @@
     % Page de garde du rapport
     %--------------------------
     \parindent=0pt
+
+    \begin{minipage}{\linewidth}
+        \begin{center}
+        \includegraphics[scale=0.28]{logo-lille1-2014.png}
+        \end{center}
+    \end{minipage}
+
+    \vspace{0.4cm}
+
+    \begin{minipage}{\linewidth}
+        \begin{center}
+        \includegraphics[scale=0.28]{ESRF_logo.png}
+        \end{center}
+    \end{minipage}
+
+    \vspace{0.4cm}
+
     \hrulefill
     \begin{center}\bfseries\Huge
         Modeling of protein shapes from SAXS data
@@ -44,16 +61,24 @@
     % Page pour les divers remerciements
     %-------------------------------------
 
+I would like to thank my supervisor J\'er\^ome Kieffer for his help 
+and his teaching all along my traineeship at the ESRF, my university 
+tutor Emeline Dudognon for the time she spend to help me for my 
+traineeship, Claudio Ferrero, head of ESRF Data Analysis Unit, for the 
+revision of this report, Pierre Paleo, Thomas Vincent and Frederic 
+Sulzmann for the numerous pieces of advice they gave me.
+
 
 \tableofcontents
 \addcontentsline{toc}{chapter}{Table of contents}
-\pagenumbering{arabic}
 
 
 \chapter{Introduction}
+\pagenumbering{arabic}
     %-------------------
     % Premier chapitre   
     %-------------------
+
 
 \section{ESRF - The European Synchrotron}
 
@@ -264,7 +289,7 @@ it for test purposes (figure~\ref{fgr:saxscurve}).
     %--------------------
     % Deuxieme chapitre  
     %--------------------
-\setcounter{page}{7}
+%\setcounter{page}{7}
 
 FreeSAS is a Python package for BioSAXS data analysis. 
 It is comprised of several modules, each focusing on a special task. 
@@ -749,7 +774,7 @@ The final configuration of the 16 dummy atom models are then saved in
 post-processing these files.
 
 \section{SuPyComb performances}
-\setcounter{page}{18}
+%\setcounter{page}{18}
 
 Several features of \textit{SuPyComb} make its use appealing as a 
 replacement of \textsc{atsas}' \textit{supcomb}.
@@ -831,7 +856,9 @@ problematic \textsc{atsas}' modules as \textit{dammin}.
 Some tests have been performed to compare in the same situations the 
 different execution times of both \textsc{atsas}' supcomb and FreeSAS' 
 SuPyComb. 
-These execution times have been computed with... %TODO references pour Scisoft12 
+These execution times have been computed with Scisoft12, a computer 
+fitted with two processors Intel(R) Xeon(R) CPU E5-2667 0 @ 2.90GHz, 
+six cores each.
 
 Data used as inputs are pdb files from dammif, computed from the 
 scattering curve of lysozyme, and with its two modes: fast and slow. 
