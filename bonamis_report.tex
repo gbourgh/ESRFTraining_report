@@ -64,7 +64,8 @@
 I would like to thank my supervisor J\'er\^ome Kieffer for his help 
 and his teaching all along my traineeship at the ESRF, my university 
 tutor Emeline Dudognon for the time she spend to help me for my 
-traineeship, Claudio Ferrero, head of ESRF Data Analysis Unit, for the 
+traineeship, the BM29 staff and especially Martha Brennich and Adam 
+Round, Claudio Ferrero, head of ESRF Data Analysis Unit, for the 
 revision of this report, Pierre Paleo, Thomas Vincent and Frederic 
 Sulzmann for the numerous pieces of advice they gave me.
 
@@ -145,7 +146,7 @@ The global data-analysis process can be divided in four steps:
  \item azimuthal integration of the image
  \item background correction (scattering from the sample buffer)
  \item basic analysis of the scattering curves
- \item ab initio modeling
+ \item \textit{ab initio} modeling
 \end{itemize}
 
 \begin{figure}
@@ -176,14 +177,14 @@ from the \textsc{atsas} package \cite{atsas}.
 The EDNA analysis pipeline generates automatically Guinier and Kratky
 plots for visual analysis of the scattering signal.\\
 
-The fourth step of the data analysis is the ab initio modeling, 
+The fourth step of the data analysis is the \textit{ab initio} modeling, 
 presented in the following section, which is the core of the subject.
 
-\section{Ab initio modeling}
+\section{\textit{Ab initio} modeling}
 \label{modeling}                           %flag pour citer cette section
 
-Ab initio modeling aims at building a low-resolution 3-D model of the 
-macromolecule of interest. 
+\textit{Ab initio} modeling aims at building a low-resolution 3-D 
+model of the macromolecule of interest. 
 BM29 staff uses for this other tools from the \textsc{atsas} package 
 as follows.\\
 
@@ -239,8 +240,9 @@ integration into the pipeline, a Python library could be advantageous.
 \item programs from this package are closed source and 
 changing from version to version add difficulties to the process of 
 their integration into the pipeline. 
-\item the execution time of these programs causes the ab initio 
-modeling to be the bottleneck of the BM29 pipeline. 
+\item the execution time of these programs causes the 
+  \textit{ab initio} modeling to be the bottleneck of the BM29 
+  pipeline. 
 \item sometimes the whole EDNA pipeline needs to be aborted 
 due to \textit{dammin}, not returning results after half an hour.
 \end{enumerate}
@@ -274,13 +276,14 @@ We will use this protein all along the report for examples,
 presentation of results and code performances. 
 This protein is very common in biology and simple to study. 
 In particular, it is present in egg white. 
-The scattering curve of lysozyme comes from \textsc{atsas}, which uses 
-it for test purposes (figure~\ref{fgr:saxscurve}).
+The scattering curve of lysozyme comes from the \textsc{atsas} test 
+suite, which uses it for test purposes (figure~\ref{fgr:saxscurve}).
 
 \begin{figure}
 \centering
-\includegraphics[scale=0.45]{saxscurve.png}
-\caption{SAXS curve of the lysozyme protein provided in \textsc{atsas}}
+\includegraphics[scale=0.40]{saxscurve.png}
+\caption{SAXS curve of the lysozyme protein provided by the 
+  \textsc{atsas} test suite}
 \label{fgr:saxscurve}
 \end{figure}
 
@@ -326,14 +329,12 @@ of the model on the experimental data ($\chi^2$ and $R$-value).
 These numbers represent the quality of the model and are calculated 
 using the difference between the actual SAXS curve and the simulated 
 one. 
-These quality factors are used used to reject models badly reproducing 
+These quality factors are used to reject models badly reproducing 
 experimental data.
 
-The second piece of information to retrieve are the dummy atoms 
-coordinates. 
-These are not actual atoms, but they indicate that there is some 
-material (the macromolecule) in their positions, and where there are 
-no dummy atoms, it is solvent. 
+The dummy atoms are not actual atoms, but they indicate that there is 
+some material (the macromolecule) in their positions, and where there 
+are no dummy atoms, it is solvent. 
 Typical DAM used in this project had 500 dummy atoms (order of 
 magnitude). 
 The parser written was dedicated to the following task: read the PDB 
@@ -442,7 +443,7 @@ z_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} z_{ik}
 \]\\
 The canonical translation to send the model $S_{k}$ to the coordinates' 
 origin is calculated with $(-x_{k}^0,\ -y_{k}^0,\ -z_{k}^0)$ vector to 
-obtain the $4 \time 4$ canonical translation matrix of $S_{k}$: 
+obtain the $4 \times 4$ canonical translation matrix of $S_{k}$: 
 $T_{k}^0$.
 
 With both models translated to their center of mass, the NSD between 
@@ -485,7 +486,7 @@ we have, with $\delta_{ij}$ the Kronecker delta,
 \]\\
 It appears that the $I_{k}$ tensor is symmetric real, hence we know 
 that it can be diagonalized; we can compute its three eigenvalues 
-$\lambda_{k1} \geq \lambda_{k2} \geq \lambda_{k3}$ and the three 
+$\lambda_{k1} \leq \lambda_{k2} \leq \lambda_{k3}$ and the three 
 eigenvectors corresponding $v_{k1},\ v_{k2},\ v_{k3}$. 
 We can create a rotation matrix composed by the eigenvectors of 
 $I_{k}$, arranged in columns and sorted in increasing order of the 
@@ -493,7 +494,7 @@ associated eigenvalues.
 If this matrix is named $M_{k}$, its transposed $[M_{k}]^T$ is the 
 rotation matrix which align $S_{k}$ axes of inertia along the 
 coordinates axes \cite{supcomb}, i.e. the one we are looking for 
-($4 \time 4$ rotation matrix).
+($4 \times 4$ rotation matrix).
 
 Including the canonical rotations for each models to the process, we 
 obtain a NSD value between the two DAM of $0.60$ (before it was 
@@ -747,7 +748,9 @@ returns the two graphs presented in figure~\ref{fgr:nsd}.
 \centering
 \includegraphics[scale=0.45]{nsd.png}
 \caption{Two graphs computed by \textit{SuPyComb}, the NSD table and 
-         for each model the average NSD with all the others}
+         for each model the average NSD with all the others. The DAM 
+         called "model-XX" are respectively the DAM "dammif-XX" after 
+         their alignment.}
 \label{fgr:nsd}
 \end{figure}
 The $16 \times 16$ NSD table reports the distances between each pair 
@@ -795,7 +798,7 @@ EDNA' runs.
 The execution time of \textit{SuPyComb} is also a great advantage 
 compared to \textit{supcomb}. 
 Some tests have been performed to compare execution times with several 
-options of both programs (always with the same Lysozyme SAXS curve). 
+options of both programs (always with the same lysozyme SAXS curve). 
 Results are presented in the appendix~\ref{perfappendix}.
 
 In addition to these advantages the Python implementation of SuPyComb 
@@ -829,9 +832,9 @@ difficulties found in the integration of \textit{supcomb} into EDNA.
 Moreover, its execution speed improves the computing performance of 
 the EDNA pipeline.\\
 
-As FreeSAS has not been created only for this task the package will be 
-further developed to provide new tools able to replace other 
-problematic \textsc{atsas}' modules as \textit{dammin}.
+While SuPyComb is the first part of FreeSAS, FreeSAS aims at hosting 
+new tools able to replace some of the \textsc{atsas} programs as 
+"drop-in" replacemen, with the advantage of a very permissive license.
 
 
 \newpage                 %ne pas enlever (numerotation pour sommaire)
@@ -900,7 +903,7 @@ that it is not obvious.
 Some tests have been performed to compare in the same situations the 
 different execution times of both \textsc{atsas}' supcomb and FreeSAS' 
 SuPyComb. 
-These execution times have been computed with Scisoft12, a computer 
+These execution times have been computed on a server 
 fitted with two processors Intel(R) Xeon(R) CPU E5-2667 0 @ 2.90GHz, 
 six cores each.
 
@@ -911,10 +914,10 @@ atoms each; and with the second one, 16 models of nearly 3050 dummy
 atoms. 
 Supcomb and SuPyComb are tested with four combinations of two options: 
 \begin{itemize}
-\item fast mode - enantiomorphs not allowed
-\item fast mode - enantiomorphs allowed
-\item slow mode - enantiomorphs not allowed
-\item slow mode - enantiomorphs allowed
+\item fast mode - without enantiomorphs search
+\item fast mode - with enantiomorphs search
+\item slow mode - without enantiomorphs search
+\item slow mode - with enantiomorphs search
 \end{itemize}
 
 Results from dammif models in fast mode are presented in 
@@ -926,14 +929,16 @@ execution time, even if it is doing other thing that supcomb
 
 \begin{figure}
 \includegraphics[scale=0.8]{perfdamfast.png}
-\caption{Execution time of supcomb and SuPyComb with several option 
-  for dammif fast mode (515 dummy atoms)}
+\caption{Execution time of supcomb from \textsc{atsas} and SuPyComb 
+  from FreeSAS with several option for dammif fast mode (515 dummy 
+  atoms)}
 \label{fgr:perfdamfast}
 \end{figure} \vfill
 \begin{figure}
 \includegraphics[scale=0.8]{perfdamslow.png}
-\caption{Execution time of supcomb and SuPyComb with several option 
-  for dammif slow mode (3050 dummy atoms)}
+\caption{Execution time of supcomb from \textsc{atsas} and SuPyComb 
+  from FreeSAS with several option for dammif slow mode (3050 dummy 
+  atoms)}
 \label{fgr:perfdamslow}
 \end{figure}
 
