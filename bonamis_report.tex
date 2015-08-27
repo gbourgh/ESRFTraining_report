@@ -118,7 +118,7 @@ Figure~\ref{fgr:synchrotron} summarises this.
 \label{bm29}
 BM29 \cite{BM29paper} is a beamline for Small Angle X-ray Scattering 
 (SAXS) experiments of biological macromolecule solutions with the goal 
-of determining their 3-dimensional structures in a natural state with 
+of determining their 3-dimensional structures in a native state with 
 'low' resolution (a few nanometers). 
 
 \begin{figure}
@@ -131,9 +131,9 @@ of determining their 3-dimensional structures in a natural state with
 
 The beamline data acquisition is based on a pipeline of individual 
 tasks, highly automated, from the inputs to the final results. 
-Here this series of process will be briefly described, focussing on 
+Here this series of processes will be briefly described, focussing on 
 what is relevant to our subject.
-All data treatments have recently been described in \cite{BM29news} 
+All data treatments have recently been described in a paper \cite{BM29news} 
 (submitted to \textit{Journal of Applied Crystallography}).
 
 The series of tasks is controlled by EDNA, which is a plugin-based 
@@ -152,12 +152,12 @@ The global data-analysis process can be divided in four steps:
 \begin{figure}
 \centering
 \includegraphics[scale=0.3]{schemaSAXS.png}
-\caption{Schema of a SAXS experiment, scattering of the incident beam 
+\caption{Sketch of a SAXS experiment, scattering of the incident beam 
     creates the scattered image on the detector}
 \label{fgr:schemaSAXS}
 \end{figure}
 
-The image obtained represents the X-ray scattering from the sample, it 
+The obtained image represents the X-ray scattering from the sample, it 
 has a cylindrical symmetry along the incoming beam, as seen in 
 figure~\ref{fgr:schemaSAXS}. 
 The first step consists in averaging the 2-D image along the 
@@ -174,7 +174,7 @@ solution from the sample curve resulting in the sole scattering signal
 of the macromolecule. 
 The background corrected curve is then analysed using several tools 
 from the \textsc{atsas} package \cite{atsas}. 
-The EDNA analysis pipeline generates automatically Guinier and Kratky
+The EDNA analysis pipeline automatically generates Guinier and Kratky
 plots for visual analysis of the scattering signal.\\
 
 The fourth step of the data analysis is the \textit{ab initio} modeling, 
@@ -219,9 +219,9 @@ $\chi^{2}$ and NSD).
 All these $N - n$ models are merged with \textit{damaver} 
 \cite{damaver}. 
 Subsequently \textit{damfilt} gets the average DAM (which is not solution of
-the problem) and \textit{damstart} generates an input model for 
+the modeling) and \textit{damstart} generates an input model for 
 \textit{dammin} \cite{dammin} which refines the model to fit the 
-background subtacted curve. 
+background substracted curve. 
 The outcome of the Monte Carlo refinement performed by \textit{dammin} 
 is the final model which can be interpreted by biologists (comparison 
 with molecule fragments coming from Nuclear Magnetic Resonance or 
@@ -249,7 +249,7 @@ due to \textit{dammin}, not returning results after half an hour.
 
 In agreements with these observations, it was decided to create a 
 homemade package to overcome these data analysis problems. 
-This package has been called FreeSAS, is open source and free (under 
+This package that has been called FreeSAS is open source and free (under 
 the MIT License). 
 Written in Python, it aims at providing tools for the BioSAXS data 
 analysis with an optimized execution time and providing reliable 
@@ -266,7 +266,7 @@ scattering curve obtained from a protein called Lysozyme
 (figure~\ref{fgr:lysozyme}). 
 \begin{figure}
 \centering
-\includegraphics[scale=0.2]{lysozyme_wiki.png}
+\includegraphics[scale=0.17]{lysozyme_wiki.png}
 \caption{Lysozyme protein structure, high- and low-resolution (image 
   from Wikipedia)}
 \label{fgr:lysozyme}
@@ -274,7 +274,7 @@ scattering curve obtained from a protein called Lysozyme
 
 We will use this protein all along the report for examples, 
 presentation of results and code performances. 
-This protein is very common in biology and simple to study. 
+This protein is very common in biology and often chosen as a model. 
 In particular, it is present in egg white. 
 The scattering curve of lysozyme comes from the \textsc{atsas} test 
 suite, which uses it for test purposes (figure~\ref{fgr:saxscurve}).
@@ -282,8 +282,9 @@ suite, which uses it for test purposes (figure~\ref{fgr:saxscurve}).
 \begin{figure}
 \centering
 \includegraphics[scale=0.40]{saxscurve.png}
-\caption{SAXS curve of the lysozyme protein provided by the 
-  \textsc{atsas} test suite}
+\caption{SAXS curve of the lysozyme protein, provided by the 
+  \textsc{atsas} test suite, representing the log of the scattering 
+  intensity versus the scattering vector.}
 \label{fgr:saxscurve}
 \end{figure}
 
@@ -333,8 +334,8 @@ These quality factors are used to reject models badly reproducing
 experimental data.
 
 The dummy atoms are not actual atoms, but they indicate that there is 
-some material (the macromolecule) in their positions, and where there 
-are no dummy atoms, it is solvent. 
+some material (the macromolecule) in their positions. 
+Where there are no dummy atoms, it is solvent. 
 Typical DAM used in this project had 500 dummy atoms (order of 
 magnitude). 
 The parser written was dedicated to the following task: read the PDB 
@@ -359,7 +360,7 @@ To be able to compute it, we use the NSD metric, introduced by Kozin
 and Svergun in their paper \textit{Automated matching of high- and 
 low-resolution structural models} \cite{supcomb}. 
 This value quantifies the dissimilarity between two sets of 
-point $S_{1}$ and $S_{2}$, in our case in a 3-D space.
+points $S_{1}$ and $S_{2}$, in our case in a 3-D space.
 These sets are neither ordered nor of the same size ($N_{1}$ points 
 for $S_{1}$ and $N_{2}$ points for $S_{2}$), making unusable in our 
 case other techniques like Kabsch method \cite{kabsch1976}.
@@ -394,7 +395,7 @@ optimized in 3 subsequent steps (and supervised by careful profiling):
   atoms in $S_{1}$ to any atom in $S_{2}$, performing subsequently the search 
   of the minimum in each row and column.
   \item Cython implementation \cite{cython} (a kind of Python code translated
-  to C) which performs simulatneously the searches for a minimum (along row 
+  to C) which performs simultaneously the searches for a minimum (along row 
   and column) for each pair of atoms, preventing a large 2-D array allocation.
   \item An OpenMP \cite{openmp} implementation of the Cython version taking
   benefit from the multi-core systems available on modern computers.
@@ -415,27 +416,28 @@ steps process to bring them into their canonical position:
 \begin{itemize}
   \item the center of mass of the model is at the origin of the 
         coordinate axes (canonical translation)
-  \item the principle axes of inertia of the model are aligned along 
+  \item the principle axes of inertia of the models are aligned along 
         the coordinate axes (canonical rotation)
 \end{itemize}
 The last step consists in applying a special symmetry operator to 
 $S_{2}$ to select the enantiomorph of $S_{2}$ corresponding to the one 
-of $S_{1}$ (enantiomorph selection).
+of $S_{1}$ (enantiomorph selection).\\
 
-We will illustrate this process showing the NSD between two models 
-after each step. 
+In the following, we will illustrate this process showing the NSD 
+between two models after each step. 
 To this effect, we will use two models generated by \textit{dammif} 
 from the lysozyme scattering curve. 
 The 3-D structures of both models after each step are presented in 
 appendix~\ref{alignstep}.
-The initial NSD between the two models is $1.01$.
+The initial NSD value between the two models is $1.01$.
 
 \subsection{Canonical translation}
 
 The first stage consists in superimposing the center of mass (COM) of 
 the two models. 
 In the dummy atom model, all the dummy atoms have the same mass so the 
-COM coordinates of the model $k$ are computed as follow:
+COM coordinates of the model $k$, with $N_{k}$ dummy atoms, are 
+computed as follow:
 \[
 x_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} x_{ik};\ \ \ 
 y_{k}^0 = \frac{1}{N_{k}} \cdot \sum\limits_{i=1}^{N_{k}} y_{ik};\ \ \ 
@@ -446,8 +448,8 @@ origin is calculated with $(-x_{k}^0,\ -y_{k}^0,\ -z_{k}^0)$ vector to
 obtain the $4 \times 4$ canonical translation matrix of $S_{k}$: 
 $T_{k}^0$.
 
-With both models translated to their center of mass, the NSD between 
-the two lysozyme DAM is $1.00$. 
+With both models translated to their center of mass, the NSD value 
+between the two lysozyme DAM is $1.00$. 
 The improvement is really modest because the initial COM of each model 
 are already close to one another.
 
@@ -492,7 +494,7 @@ We can create a rotation matrix composed by the eigenvectors of
 $I_{k}$, arranged in columns and sorted in increasing order of the 
 associated eigenvalues. 
 If this matrix is named $M_{k}$, its transposed $[M_{k}]^T$ is the 
-rotation matrix which align $S_{k}$ axes of inertia along the 
+rotation matrix which aligns $S_{k}$ axes of inertia along the 
 coordinates axes \cite{supcomb}, i.e. the one we are looking for 
 ($4 \times 4$ rotation matrix).
 
@@ -546,7 +548,7 @@ Thus, we apply the following transformation to $S_{2}$:
 
 At the end of this process, we have two DAM whose centers of mass and 
 principle axes of inertia are superimposed (canonical superimposition). 
-In our example, we obtain after this process a NSD equal to $0.58$.
+In our example, we obtain after this process a NSD value equal to $0.58$.
 
 After this coarse superimposition process, the NSD between the two DAM 
 decreased from a $NSD_{init} = 1.01$ to $NSD_{final} = 0.58$. 
@@ -581,7 +583,7 @@ minimize the NSD.
 The optimizer is stopped when convergence has been reached and returns 
 the six refined parameters and the minimized NSD. 
 The final NSD value is assumed to reflect the actual dissimilarity 
-between them.\\
+between the DAM.\\
 
 If we add to the coarse superposition this refinement process we 
 obtain $NSD_{refined} = 0.51$ in the example of the two lysozyme DAM. 
@@ -595,8 +597,8 @@ to $0.58$).
 The algorithm superimposing two DAM was implemented in order to 
 superpose the $N$ models generated by \textit{dammif}.\\
 
-For it, \textit{dammif} PDB files are first read in through the 
-FreeSAS parser and relevant data are extracted. 
+To this effect, \textit{dammif} PDB files are first read in through 
+the FreeSAS parser and relevant data are extracted. 
 Some properties are then computed from it (COM, inertia tensor,...). 
 At this stage we have $N$ detailed DAM and all we need is to 
 superpose them.
@@ -695,9 +697,10 @@ number of input models:
         with the coordinates of the second model aligned on the first one.
   \item if there are more than two models, \textit{SuPyComb} carries out 
         selections and superimposition as mentionned above. 
-        It returns the $N \times N$ NSD table, a graph with the $R-values$, 
-        the maximal accepted value and the average NSD with all the other 
-        models and its threshold for each DAM.
+        It returns the $N \times N$ NSD table and two graphes: one plotting 
+        the $R-values$ and the maximal accepted value $R_{max}$ and the 
+        other plotting the average NSD with all the other models and its 
+        threshold for each DAM.
 \end{itemize}
 Moreover, some options are available for \textit{SuPyComb} users, and 
 especially these ones:
@@ -707,7 +710,7 @@ especially these ones:
   (i.e. 8 times) whereas for the fast mode, the best symmetry is first 
   choosen without optimization and only the NSD for this symmetry is 
   optimized.
-  The result is that the slow mode is nearly 8 times slower than the fast 
+  As a consequence, the slow mode is nearly 8 times slower than the fast 
   one.
   \item Enantiomorph option:
   This option can be used in order for the program to look up or not 
@@ -717,7 +720,7 @@ especially these ones:
   same protein.
 \end{itemize}
 
-\section{Results of the lysozyme study}%TODO revoir le titre
+\section{Results of the lysozyme study}
 
 We took the scattering curve of lysozyme as an argument for 
 \textit{dammif}, that we ran 16 times in its slow mode. 
@@ -739,15 +742,15 @@ It points out the fact that the $R-value$ of one of the models
 $R-values$ plus twice the standard deviation. 
 The DAM "dammif-11" is automatically flagged as non-valid and is 
 discarded. 
-The model will not taking into account in the subsequent 
+This model will be discarded for the subsequent 
 \textit{SuPyComb} process that will save execution time.
 
 After the whole process detailed in chapter 2, \textit{SuPyComb} 
-returns the two graphs presented in figure~\ref{fgr:nsd}. 
+returns the results presented in figure~\ref{fgr:nsd}. 
 \begin{figure}
 \centering
 \includegraphics[scale=0.45]{nsd.png}
-\caption{Two graphs computed by \textit{SuPyComb}, the NSD table and 
+\caption{Data returned by \textit{SuPyComb}, the NSD table and 
          for each model the average NSD with all the others. The DAM 
          called "model-XX" are respectively the DAM "dammif-XX" after 
          their alignment.}
@@ -755,7 +758,7 @@ returns the two graphs presented in figure~\ref{fgr:nsd}.
 \end{figure}
 The $16 \times 16$ NSD table reports the distances between each pair 
 of models. 
-The color scale highlights the biggest and the lowest NSD values 
+The color scale highlights the highest and the lowest NSD values 
 giving a clear idea of how models are ranked as similar or, on the 
 contrary, dissimilar.\\
 The graph "NSD between any model and all others" gives five pieces of 
@@ -763,8 +766,8 @@ information:
 \begin{itemize}
 \item the NSD between any model and all the others
 \item the $NSD_{max}$ computed as the mean plus one standard deviation
-\item the discarded models, and why they have been discarded ($R-value$ 
-      or $\chi^{2}$)
+\item the discarded models, and the reason why they have been discarded 
+      ($R-value$ or $\chi^{2}$)
 \item the models discarded due to their dissimilarity (NSD)
 \item the reference model, i.e. the one with the lowest average NSD with 
       all other models
@@ -830,7 +833,9 @@ models from \textit{dammif}.
 As it is written in Python and is open source, FreeSAS removes some 
 difficulties found in the integration of \textit{supcomb} into EDNA. 
 Moreover, its execution speed improves the computing performance of 
-the EDNA pipeline.\\
+the EDNA pipeline.
+Consequently FreeSAS has been integrated into BM29 pipeline which is 
+described into a submitted publication.\\
 
 While SuPyComb is the first part of FreeSAS, FreeSAS aims at hosting 
 new tools able to replace some of the \textsc{atsas} programs as 
@@ -839,7 +844,7 @@ new tools able to replace some of the \textsc{atsas} programs as
 
 \newpage                 %ne pas enlever (numerotation pour sommaire)
 \addcontentsline{toc}{chapter}{Bibliography}
-\bibliographystyle{plain}%ou autre ???
+\bibliographystyle{mike}%ou autre ???
 \bibliography{bibliography}
     %-------------------------
     % Bibliographie du stage
