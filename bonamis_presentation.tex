@@ -12,7 +12,7 @@
 \def\theauthor {Guillaume Bonamis}				%Full authors, displayed on first slide
 \def\theshortauthor {Bonamis}					%Short authors, displayed on all slides footers
 \def\thedate {Vendredi 4 Septembre}
-\def\theinstitute {European Synchrotron Radiation Facility, Universit\'e Lille 1\\
+\def\theinstitute {ESRF - The European Synchrotron, Universit\'e Lille 1\\
   superviseur: J\'er\^ome Kieffer\\
   tuteur: Emeline Dudognon }%Full name of institute, displayed on first slide
 \def\theshortinstitute {ESRF, Lille 1}			%Short name of institute, displayed on all slides footers
@@ -188,14 +188,15 @@ Traitement des donn\'ees exp\'erimentales: pipeline de programmes\\
     \begin{center}
     \vspace{-0.3cm}
     \hspace{-0.4cm}
-    \includegraphics[scale=0.3]{model.png}
+    \includegraphics[scale=0.25]{model.png}
     \end{center}
 \end{minipage}
 
 \end{frame}
 
 \begin{frame}{\textit{Supcomb}}
-\textit{supcomb} = programme du paquet \textsc{atsas}
+\textit{supcomb} = programme du paquet \textsc{atsas}\\
+(Kozin and Svergun, 2001)
 \begin{itemize}
   \item code source ferm\'e
   \item probl\`emes d'int\'egration dans la pipeline de BM29
@@ -209,7 +210,7 @@ Objectif du stage : r\'e-impl\'ementation de \textit{supcomb}\\
 
 \end{frame}
 
-\section{Impl\'ementation de FreeSAS}
+\section{Impl\'ementation et algorithmes de FreeSAS}
 %-------------------------------------------
 %----------------Second part----------------
 %-------------------------------------------
@@ -218,7 +219,7 @@ Objectif du stage : r\'e-impl\'ementation de \textit{supcomb}\\
 
 \begin{itemize}
 \item biblioth\`eque \'ecrite en Python
-\item 2000 lignes de code
+\item 1600 lignes de code
 \item documentation sur readthedocs.org
 \item code source sur github.com
 \item license MIT (libre)
@@ -277,21 +278,24 @@ Alignement grossier de deux mod\`eles:\\
 
 \begin{frame}{NSD et optimisation}
 Mesure de la diff\'erence entre 2 DAM $\longrightarrow$ \textbf{NSD}\\
-(Normalized Spatial Discrepancy, Kozin and Svergun, 2001)
+\begin{flushright} \small{Normalized Spatial Discrepancy} \end{flushright}
+\[
+\rho(S_{1},S_{2})= \frac{1}{2} \sqrt {\frac{1}{N_{1}d_{2}^2} 
+\cdot \sum\limits_{i=1}^{N_{1}} \rho^2(s_{1i}, S_{2}) + \frac{1}{N_{2}d_{1}^2} \cdot \sum\limits_{i=1}^{N_{2}} \rho^2(s_{2i}, S_{1})}
+\]
 \begin{itemize}
 \item sym\'etrique $NSD(S_{1},S_{2}) = NSD(S_{2},S_{1})$
 \item $NSD(S_{1},S_{2}) = 0$ ssi $S_{1} = S_{2}$
 \item $NSD(S_{1},S_{2}) > 1.0$ $\Rightarrow$ 2 DAM totalement diff\'erents
 \end{itemize}
 
-\vspace{0.2cm}
+\vspace{0.1cm}
 
-Optimisation de la superposition $\longrightarrow$ optimiseur \textit{Scipy}
+Optimisation de la superposition $\longrightarrow$ optimiseur \textit{Scipy} : simplex
 \begin{itemize}
 \item alignement grossier = initialisation de l'optimiseur
 \item 6 param\`etres libres (3 de translation, 3 angles d'Euler)
-\item multiples it\'erations jusqu'\`a la convergence de la NSD
-\item retourne 6 param\`etres optimis\'es + NSD minimis\'ee
+\item minimisation de la NSD
 \end{itemize}
 
 \end{frame}
@@ -304,7 +308,7 @@ $R-factor$ $\longrightarrow$ $N-m$ DAM valides\\
 
 Rejet des mod\`eles diff\'erents des autres (NSD):
 \begin{itemize}
-\item tableau $N \times N$ des NSD ($N^{2}$ pairs de DAM)
+\item tableau $N \times N$ des NSD
 \item pour chaque DAM $\rightarrow$ moyenne des NSD avec tous les autres
 \item rejet des mod\`eles d\'epassant $NSD_{max}$
 \item plus basse $NSD_{moy}$ $\rightarrow$ DAM "r\'ef\'erence"
@@ -316,7 +320,7 @@ Finalement $\longrightarrow$ $N-n$ mod\`eles valides dont une r\'ef\'erence
 
 \end{frame}
 
-\section{Application sur la Lysozyme}
+\section{Application sur la lysozyme}
 %-------------------------------------------
 %----------------Third part-----------------
 %-------------------------------------------
@@ -377,7 +381,19 @@ D\'eveloppement de FreeSAS :
 \item r\'esultats conformes aux attentes
 \item traitement rapide des donn\'ees (Cython, OpenMP)
 \item remplace efficacement \textit{supcomb} sur BM29
+\item int\'egr\'e dans une publication soumise \`a l'IUCr\\
+  (Brennich, Kieffer et al. 2015)
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Remerciements}
+\begin{center}
+superviseur J\'er\^ome Kieffer\\
+tuteur universitatire Emeline Dudognon\\
+head of Data Analysis Unit Claudio Ferrero\\
+les membres de la DAU\\
+l'\'equipe de BM 29
+\end{center}
 \end{frame}
 
 \end{document}
